@@ -1,0 +1,3163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Email System</title>
+    <style>
+        :root {
+            --bg: #eef4fb;
+            --page: #eaf1f8;
+            --card: #ffffff;
+            --card-soft: #f5f8fc;
+            --text: #102033;
+            --muted: #5f7188;
+            --line: #c8d7ea;
+            --line-soft: #dbe6f3;
+            --primary: #2f73d8;
+            --primary-dark: #245fb7;
+            --primary-soft: #dbeafe;
+            --primary-soft-2: #eaf2ff;
+            --status-soft: #e8f1ff;
+            --shadow: 0 14px 34px rgba(47, 115, 216, .12);
+            --shadow-sm: 0 8px 18px rgba(47, 115, 216, .10);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        body {
+            font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            min-height: 100vh;
+            padding: 0px;
+            color: var(--text);
+            background: var(--bg);
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            background-image: radial-gradient(circle, #9bb0c8 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: .28;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1600px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            grid-template-rows: auto 1fr;
+            gap: 8px;
+            height: 100vh;
+            min-height: 0
+        }
+
+        .header {
+            grid-column: 1/-1;
+            background: #ffffff;
+            padding: 16px 20px;
+            border-radius: 0;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 8px;
+            border: 1px solid var(--line);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .header img {
+            display: block;
+            width: 46px;
+            height: auto;
+            object-fit: contain;
+            flex-shrink: 0;
+        }
+
+        .header h1 {
+            font-size: 22px;
+            font-weight: 800;
+            color: #1f5fae;
+            letter-spacing: .2px;
+            text-shadow: none;
+            line-height: 1;
+            margin: 0
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            min-height: 0
+        }
+
+        .controls-bar {
+            background: #eaf2fb;
+            border: 1px solid #bfd3ea;
+            border-radius: 0;
+            padding: 6px 10px;
+            box-shadow: 0 14px 34px rgba(47, 115, 216, .12);
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto auto;
+            gap: 8px;
+            align-items: center;
+            justify-content: space-between;
+            width: min(100%, 1100px);
+        }
+
+        .controls-section {
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+
+        .left-section {
+            flex-direction: column;
+            gap: 4px;
+            align-items: flex-start;
+            flex: 1
+        }
+
+        .month-week-selector {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-height: 40px;
+            background: #ffffff;
+            padding: 6px 12px;
+            border-radius: 14px;
+            width: 100%;
+            border: 1px solid #b7cdec;
+            box-shadow: 0 8px 20px rgba(47, 115, 216, .10), inset 5px 0 0 #2f73d8
+        }
+
+        .month-label {
+            font-weight: 900;
+            color: #0f2747;
+            font-size: 17px;
+            white-space: nowrap
+        }
+
+        .week-type-group {
+            display: flex;
+            gap: 12px
+        }
+
+        .week-type-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 10px;
+            transition: .2s
+        }
+
+        .week-type-badge:hover {
+            background: #eaf2ff
+        }
+
+        .week-type-badge input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #2f73d8
+        }
+
+        .week-type-badge label {
+            font-size: 15px;
+            color: #193b66;
+            cursor: pointer;
+            font-weight: 900
+        }
+
+        .week-type-badge.active label {
+            color: #1f5fae
+        }
+
+        .week-checkboxes {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+            flex-wrap: wrap
+        }
+
+        .week-check-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            background: #ffffff;
+            border-radius: 14px;
+            cursor: pointer;
+            border: 1px solid #b7cdec;
+            transition: all .2s ease;
+            font-size: 13px;
+            font-weight: 850;
+            color: #1f5fae;
+            white-space: nowrap;
+            box-shadow: 0 8px 18px rgba(47, 115, 216, .10)
+        }
+
+        .week-check-item:hover {
+            transform: translateY(-1px);
+            background: #e3efff;
+            border-color: #7fb0ec;
+            box-shadow: 0 12px 24px rgba(47, 115, 216, .16)
+        }
+
+        .week-check-item input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: #2f73d8
+        }
+
+        .week-check-item:has(input:checked) {
+            background: #1f5fae;
+            color: #ffffff;
+            border-color: #174d91;
+            box-shadow: 0 12px 26px rgba(31, 95, 174, .22)
+        }
+
+        .middle-section {
+            display: grid;
+            grid-template-columns: auto auto;
+            gap: 8px 10px;
+            background: #ffffff;
+            padding: 6px 10px;
+            border-radius: 14px;
+            flex: 0 1 auto;
+            border: 1px solid #b7cdec;
+            box-shadow: 0 8px 20px rgba(47, 115, 216, .10), inset 5px 0 0 #2f73d8
+        }
+
+        .right-section {
+            gap: 8px
+        }
+
+        .dropdown-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            min-height: 40px;
+            padding: 7px 14px;
+            background: #f8fbff;
+            color: #102033;
+            border: 1px solid #c8d7ea;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 900;
+            cursor: pointer;
+            transition: all .2s ease;
+            box-shadow: 0 8px 18px rgba(47, 115, 216, .10)
+        }
+
+        .dropdown-btn:hover {
+            transform: translateY(-2px);
+            background: #eef6ff;
+            border-color: #8fb5e8;
+            box-shadow: 0 14px 28px rgba(47, 115, 216, .16)
+        }
+
+        .dropdown-icon {
+            font-size: 17px;
+            color: #2f73d8;
+            font-weight: 900;
+            display: flex;
+            align-items: center
+        }
+
+        .selected-sheet-display {
+            grid-column: 1/-1;
+            min-height: 36px;
+            display: flex;
+            align-items: center;
+            padding: 0 14px;
+            background: #f8fbff;
+            border: 1px solid #9fbfe9;
+            border-radius: 14px;
+            font-size: 18px;
+            font-weight: 950;
+            color: #102033;
+            letter-spacing: .8px;
+            text-transform: uppercase;
+            box-shadow: 0 8px 18px rgba(47, 115, 216, .10), inset 4px 0 0 #2f73d8
+        }
+
+        .selected-sheet-display span {
+            color: #1f5fae;
+            margin-right: 8px;
+            font-size: 13px;
+            font-weight: 900;
+            letter-spacing: .5px;
+            text-transform: none
+        }
+
+        .btn-primary,
+        .add-user-btn {
+            border: none;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 950;
+            cursor: pointer;
+            transition: all .2s ease;
+            letter-spacing: .4px;
+            color: white;
+            box-shadow: 0 12px 28px rgba(47, 115, 216, .24)
+        }
+
+        .btn-primary {
+            min-height: 40px;
+            padding: 8px 26px;
+            background: #2f73d8;
+            text-transform: uppercase
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            background: #245fb7;
+            box-shadow: 0 16px 34px rgba(47, 115, 216, .30)
+        }
+
+        .add-user-btn:hover {
+            transform: translateY(-2px);
+            background: #1d5fae;
+            box-shadow: 0 16px 34px rgba(31, 95, 174, .28)
+        }
+
+        .add-user-btn {
+            min-height: 40px;
+            padding: 8px 22px;
+            background: #1f5fae;
+            box-shadow: 0 12px 28px rgba(31, 95, 174, .22)
+        }
+
+        .controls-buttons {
+            display: flex;
+            gap: 8px;
+            flex-direction: column;
+            width: 100%
+        }
+
+        .table-wrapper {
+            background: #ffffff;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--line);
+            flex: 1;
+            min-height: 0;
+            overflow: auto
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            table-layout: fixed
+        }
+
+        thead {
+            background: #dbeafe
+        }
+
+        thead th {
+            position: sticky;
+            top: 0;
+            z-index: 5;
+            background: #dbeafe;
+            box-shadow: inset 0 -1px 0 #c4d8f4
+        }
+
+        thead tr {
+            height: 48px
+        }
+
+        th {
+            height: 48px;
+            padding: 0 14px;
+            text-align: left;
+            vertical-align: middle;
+            font-weight: 900;
+            color: #1f5fae;
+            border-right: 1px solid #c4d8f4;
+            white-space: nowrap;
+            letter-spacing: .4px;
+            line-height: 48px
+        }
+
+        th:last-child {
+            border-right: none
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #e4edf8;
+            transition: all .15s ease
+        }
+
+        tbody tr:nth-child(even) {
+            background: #f4f8fd
+        }
+
+        tbody tr:hover {
+            background: #eaf2ff;
+            box-shadow: inset 4px 0 0 var(--primary)
+        }
+
+        td {
+            padding: 12px 14px;
+            border-right: 1px solid #e4edf8;
+            color: #102033;
+            vertical-align: middle
+        }
+
+        td:last-child {
+            border-right: none
+        }
+
+        .checkbox-col {
+            width: 40px;
+            text-align: center
+        }
+
+        .checkbox-col input {
+            width: 17px;
+            height: 17px;
+            cursor: pointer;
+            accent-color: var(--primary)
+        }
+
+        .id-col {
+            width: 70px;
+            font-weight: 900;
+            color: #1f5fae
+        }
+
+        .name-col {
+            min-width: 180px;
+            font-weight: 700;
+            white-space: pre-line;
+            line-height: 1.25
+        }
+
+        .email-col {
+            min-width: 180px;
+            font-size: 12px;
+            color: #5f7188
+        }
+
+        .status-col {
+            width: 120px;
+            text-align: center;
+            font-weight: 900
+        }
+
+        .time-col {
+            width: 168px;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: #5f7188
+        }
+
+        .action-col {
+            width: 108px;
+            text-align: center
+        }
+
+        .row-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: stretch
+        }
+
+        thead .status-col {
+            border-radius: 0;
+            background: transparent;
+            color: #1f5fae;
+            text-align: center;
+            vertical-align: middle;
+            line-height: 48px
+        }
+
+        td.status-col {
+            border-radius: 0
+        }
+
+        .status-sent {
+            color: #1f5fae;
+            background: #eaf2ff
+        }
+
+        .status-pending {
+            color: #4b6380;
+            background: #f1f6fc
+        }
+
+        .delete-user-btn {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            width: 100%;
+            min-height: 30px;
+            padding: 6px 8px;
+            border: none;
+            border-radius: 10px;
+            background: #ffe8e8;
+            color: #c0392b;
+            font-size: 11px;
+            font-weight: 900;
+            cursor: pointer;
+            transition: all .2s ease;
+            box-shadow: 0 8px 16px rgba(192, 57, 43, .12)
+        }
+
+        .delete-user-btn:hover {
+            transform: translateY(-1px);
+            background: #ffd7d7;
+            box-shadow: 0 10px 18px rgba(192, 57, 43, .18)
+        }
+
+        .edit-user-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            width: 100%;
+            min-height: 30px;
+            padding: 6px 8px;
+            border: 1px solid #9fbfe9;
+            border-radius: 10px;
+            background: #f8fbff;
+            color: #1f5fae;
+            font-size: 11px;
+            font-weight: 900;
+            cursor: pointer;
+            transition: all .2s ease;
+            box-shadow: 0 8px 16px rgba(47, 115, 216, .10)
+        }
+
+        .edit-user-btn:hover {
+            transform: translateY(-1px);
+            background: #eef6ff;
+            border-color: #7fb0ec;
+            box-shadow: 0 10px 18px rgba(47, 115, 216, .16)
+        }
+
+        .row-selected .delete-user-btn {
+            display: inline-flex
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            min-height: 0;
+            height: 100%
+        }
+
+        .logs-panel {
+            background: #ffffff;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            min-height: 0;
+            border: 1px solid var(--line)
+        }
+
+        .logs-header {
+            background: #dbeafe;
+            color: #1f5fae;
+            padding: 14px 16px;
+            font-weight: 900;
+            font-size: 15px;
+            border-bottom: 1px solid #c4d8f4
+        }
+
+        .logs-content {
+            padding: 12px 14px;
+            max-height: none;
+            overflow-y: auto;
+            flex: 1;
+            min-height: 0
+        }
+
+        .log-entry {
+            font-size: 12px;
+            color: var(--muted);
+            padding: 9px 0;
+            border-bottom: 1px solid #e4edf8;
+            line-height: 1.45
+        }
+
+        .log-entry:last-child {
+            border-bottom: none
+        }
+
+        .log-time {
+            color: #7b8da3;
+            font-size: 10px;
+            font-weight: 800
+        }
+
+        .log-message {
+            color: #33475f;
+            margin-top: 3px;
+            font-weight: 650
+        }
+
+        .modal,
+        .sheets-modal,
+        .add-sheet-modal,
+        .cc-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(31, 95, 174, .18);
+            backdrop-filter: blur(6px);
+            animation: fadeIn .25s ease-out
+        }
+
+        .add-sheet-modal {
+            z-index: 1001
+        }
+
+        .modal-content,
+        .add-sheet-modal-content {
+            background: #ffffff;
+            margin: 5% auto;
+            padding: 34px;
+            border-radius: 22px;
+            width: 90%;
+            max-width: 480px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--line)
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--line)
+        }
+
+        .modal-header h2 {
+            font-size: 22px;
+            color: #1f5fae;
+            margin: 0
+        }
+
+        .close-btn,
+        .cc-close {
+            background: #eaf2ff;
+            border: none;
+            font-size: 26px;
+            font-weight: 900;
+            color: #1f5fae;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            transition: .2s
+        }
+
+        .close-btn:hover,
+        .cc-close:hover {
+            background: #dbeafe
+        }
+
+        .form-group,
+        .add-sheet-form-group {
+            margin-bottom: 16px
+        }
+
+        .form-group label,
+        .add-sheet-form-group label {
+            display: block;
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 8px;
+            font-weight: 700
+        }
+
+        .form-group input,
+        .add-sheet-form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #c8d7ea;
+            border-radius: 16px;
+            font-size: 14px;
+            color: #102033;
+            background: white;
+            box-sizing: border-box;
+            transition: .2s;
+            font-family: inherit
+        }
+
+        .form-group input:focus,
+        .add-sheet-form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(47, 115, 216, .12)
+        }
+
+        .form-actions,
+        .add-sheet-form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px
+        }
+
+        .btn-cancel,
+        .btn-submit,
+        .add-sheet-form-actions button {
+            flex: 1;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 900;
+            cursor: pointer;
+            transition: .2s
+        }
+
+        .btn-cancel,
+        .add-sheet-btn-cancel {
+            background: #eaf2ff;
+            color: #1f5fae
+        }
+
+        .btn-submit,
+        .add-sheet-btn-submit {
+            background: #2f73d8;
+            color: white;
+            box-shadow: 0 12px 28px rgba(47, 115, 216, .22)
+        }
+
+        .sheets-modal-content {
+            background: white;
+            margin: 2% auto;
+            padding: 0;
+            border-radius: 22px;
+            width: 90%;
+            max-width: 760px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            border: 1px solid var(--line)
+        }
+
+        .sheets-header {
+            background: #dbeafe;
+            color: #1f5fae;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 900;
+            font-size: 15px
+        }
+
+        .add-sheet-btn {
+            background: #2f73d8;
+            color: white;
+            border: 1px solid #245fb7;
+            padding: 8px 13px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 900;
+            cursor: pointer
+        }
+
+        .sheets-list {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 12px
+        }
+
+        .sheet-item {
+            display: grid;
+            grid-template-columns: 24px minmax(0, 1fr) minmax(160px, 260px) auto;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: #f4f8fd;
+            border-radius: 14px;
+            border: 1px solid #dbe6f3;
+            transition: .2s;
+        }
+
+        .sheet-item:hover {
+            background: #eaf2ff;
+            border-color: #9fbfe9
+        }
+
+        .sheet-checkbox {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: var(--primary)
+        }
+
+        .sheet-body {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+            min-width: 0;
+            overflow: hidden
+        }
+
+        .sheet-month {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: fit-content;
+            min-width: 120px;
+            font-size: 12px;
+            font-weight: 900;
+            color: #1f5fae;
+            background: #dbeafe;
+            padding: 8px 12px;
+            border-radius: 11px;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            border: 1px solid #c4d8f4;
+            box-shadow: inset 0 -1px 0 rgba(255, 255, 255, .55)
+        }
+
+        .sheet-id {
+            min-width: 0;
+            font-size: 10px;
+            font-weight: 900;
+            color: #5f7188;
+            background: #eef6ff;
+            padding: 7px 10px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid #d2e2f3;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            line-height: 1.25;
+            max-width: 100%
+        }
+
+        .sheet-action {
+            width: 26px;
+            height: 26px;
+            background: #eaf2ff;
+            border: none;
+            border-radius: 9px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #1f5fae;
+            transition: .2s
+        }
+
+        .sheet-edit-action {
+            width: 26px;
+            height: 26px;
+            background: #eefbf3;
+            border: none;
+            border-radius: 9px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #1f7a41;
+            transition: .2s
+        }
+
+        .sheet-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: flex-end;
+            justify-self: end
+        }
+
+        .sheets-footer {
+            background: #f4f8fd;
+            padding: 12px;
+            text-align: right;
+            border-top: 1px solid #dbe6f3
+        }
+
+        .sheets-close-btn,
+        .cc-btn {
+            background: #5f7188;
+            color: white;
+            border: none;
+            padding: 9px 16px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 900;
+            cursor: pointer;
+            transition: .2s
+        }
+
+        .cc-modal-content {
+            max-width: 600px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column
+        }
+
+        .cc-header {
+            background: #dbeafe;
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0
+        }
+
+        .cc-title {
+            font-size: 24px;
+            font-weight: 900;
+            color: #1f5fae;
+            margin: 0
+        }
+
+        .cc-section {
+            padding: 20px 24px;
+            flex-shrink: 0
+        }
+
+        .cc-summary {
+            background: #eaf2ff;
+            border: 1px solid #c4d8f4;
+            border-radius: 16px;
+            padding: 14px 16px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap
+        }
+
+        .cc-summary-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px
+        }
+
+        .cc-summary-title {
+            color: #1f5fae;
+            font-size: 14px;
+            font-weight: 900;
+            line-height: 1.4
+        }
+
+        .cc-summary-count {
+            background: #dbeafe;
+            color: #1f5fae;
+            border: 1px solid #c4d8f4;
+            border-radius: 999px;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 900;
+            white-space: nowrap
+        }
+
+        .cc-list {
+            background: #f4f8fd;
+            border-radius: 16px;
+            border: 1px solid #dbe6f3;
+            padding: 10px;
+            margin: 0 24px 20px;
+            flex: 1;
+            min-height: 0;
+            overflow: auto
+        }
+
+        .cc-list-header,
+        .cc-item {
+            display: grid;
+            grid-template-columns: 36px 1.5fr 2fr 150px auto;
+            gap: 10px;
+            align-items: center
+        }
+
+        .cc-list-header {
+            padding: 10px 12px;
+            color: #1f5fae;
+            font-size: 12px;
+            font-weight: 900;
+            letter-spacing: .3px;
+            text-transform: uppercase
+        }
+
+        .cc-item {
+            background: #ffffff;
+            border: 1px solid #dbe6f3;
+            border-radius: 14px;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            transition: .2s
+        }
+
+        .cc-item:hover {
+            background: #eef6ff;
+            border-color: #9fbfe9
+        }
+
+        .cc-item:last-child {
+            margin-bottom: 0
+        }
+
+        .cc-checkbox {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: var(--primary)
+        }
+
+        .cc-name {
+            font-size: 13px;
+            font-weight: 900;
+            color: #1f5fae;
+            line-height: 1.25;
+            white-space: pre-line
+        }
+
+        .cc-email {
+            font-size: 12px;
+            color: #5f7188;
+            line-height: 1.3;
+            word-break: break-word
+        }
+
+        .cc-count {
+            justify-self: end;
+            background: #eaf2ff;
+            color: #1f5fae;
+            border: 1px solid #c4d8f4;
+            border-radius: 10px;
+            padding: 7px 10px;
+            font-size: 11px;
+            font-weight: 900;
+            white-space: nowrap
+        }
+
+        .cc-summary-note {
+            font-size: 12px;
+            color: #5f7188;
+            margin-top: 10px;
+            line-height: 1.4
+        }
+
+        .cc-add-btn {
+            background: #2f73d8;
+            color: #fff;
+            border: 1px solid #245fb7;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 900;
+            cursor: pointer;
+            transition: .2s
+        }
+
+        .cc-add-btn:hover {
+            background: #245fb7
+        }
+
+        .cc-footer {
+            padding: 16px 24px;
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+            border-top: 1px solid #dbe6f3
+        }
+
+        .cc-btn-close {
+            background: #eaf2ff;
+            color: #1f5fae
+        }
+
+        .cc-form-modal {
+            display: none;
+            position: fixed;
+            z-index: 1002;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(31, 95, 174, .18);
+            backdrop-filter: blur(6px);
+            animation: fadeIn .25s ease-out
+        }
+
+        .cc-form-modal-content {
+            background: #ffffff;
+            margin: 5% auto;
+            padding: 34px;
+            border-radius: 22px;
+            width: 90%;
+            max-width: 480px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--line)
+        }
+
+        .cc-form-title {
+            font-size: 22px;
+            color: #1f5fae;
+            margin: 0
+        }
+
+        .cc-form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px
+        }
+
+        .cc-form-actions button {
+            flex: 1;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 900;
+            cursor: pointer;
+            transition: .2s
+        }
+
+        .cc-form-cancel {
+            background: #eaf2ff;
+            color: #1f5fae
+        }
+
+        .cc-form-submit {
+            background: #2f73d8;
+            color: #fff;
+            box-shadow: 0 12px 28px rgba(47, 115, 216, .22)
+        }
+
+        .cc-action-row {
+            display: flex;
+            justify-content: flex-end;
+            gap: 6px;
+            margin-left: auto
+        }
+
+        .cc-edit-btn,
+        .cc-delete-btn {
+            border: none;
+            border-radius: 9px;
+            padding: 6px 8px;
+            font-size: 11px;
+            font-weight: 900;
+            cursor: pointer;
+            transition: .2s;
+            white-space: nowrap
+        }
+
+        .cc-edit-btn {
+            background: #eaf2ff;
+            color: #1f5fae
+        }
+
+        .cc-delete-btn {
+            background: #ffe8ea;
+            color: #b4232c
+        }
+
+        .logs-content::-webkit-scrollbar,
+        .sheets-list::-webkit-scrollbar,
+        .cc-list::-webkit-scrollbar {
+            width: 6px;
+            height: 6px
+        }
+
+        .logs-content::-webkit-scrollbar-track,
+        .sheets-list::-webkit-scrollbar-track,
+        .cc-list::-webkit-scrollbar-track {
+            background: #eaf2ff
+        }
+
+        .logs-content::-webkit-scrollbar-thumb,
+        .sheets-list::-webkit-scrollbar-thumb,
+        .cc-list::-webkit-scrollbar-thumb {
+            background: #9fbfe9;
+            border-radius: 999px
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(4px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateY(0)
+            }
+
+            to {
+                opacity: 0;
+                transform: translateY(-4px)
+            }
+        }
+
+        .table-wrapper,
+        .logs-panel,
+        .controls-bar,
+        .header {
+            animation: fadeIn .3s ease-out
+        }
+
+        @media(max-width:1200px) {
+            body {
+                overflow: auto
+            }
+
+            .container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto;
+                gap: 12px;
+                height: auto;
+                min-height: 100vh
+            }
+
+            .controls-bar {
+                width: 100%;
+                grid-template-columns: 1fr;
+                gap: 10px
+            }
+
+            .middle-section,
+            .right-section {
+                width: 100%
+            }
+
+            .sidebar {
+                flex-direction: row;
+                gap: 12px
+            }
+
+            .logs-panel {
+                flex: 1;
+                min-width: 250px
+            }
+        }
+
+        @media(max-width:768px) {
+            body {
+                padding: 8px
+            }
+
+            .header {
+                padding: 14px 16px;
+                gap: 10px
+            }
+
+            .header img {
+                width: 40px
+            }
+
+            .header h1 {
+                font-size: 18px
+            }
+
+            .controls-bar {
+                grid-template-columns: 1fr;
+                padding: 10px;
+                gap: 10px;
+                width: 100%
+            }
+
+            .controls-section {
+                width: 100%
+            }
+
+            .month-week-selector {
+                width: 100%;
+                flex-wrap: wrap
+            }
+
+            .middle-section {
+                flex-direction: row;
+                width: 100%
+            }
+
+            .right-section {
+                width: 100%
+            }
+
+            .btn-primary {
+                width: 100%
+            }
+
+            table {
+                font-size: 12px
+            }
+
+            th,
+            td {
+                padding: 10px
+            }
+
+            .action-col {
+                width: 92px
+            }
+
+            .row-actions {
+                gap: 5px
+            }
+
+            .edit-user-btn,
+            .delete-user-btn {
+                min-height: 28px;
+                padding: 6px 6px;
+                font-size: 10px
+            }
+
+            .sidebar {
+                flex-direction: column
+            }
+
+            .logs-panel {
+                max-height: 300px
+            }
+
+            .week-checkboxes {
+                gap: 6px
+            }
+
+            .week-check-item {
+                padding: 7px 10px;
+                font-size: 11px
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 24px;
+                margin: 20% auto
+            }
+
+            .cc-modal-content {
+                width: 95%;
+                max-height: 90vh;
+                margin: 5% auto
+            }
+
+            .cc-title {
+                font-size: 20px
+            }
+        }
+
+        @media(max-width:480px) {
+            .container {
+                gap: 8px
+            }
+
+            .header {
+                gap: 8px
+            }
+
+            .header h1 {
+                font-size: 15px
+            }
+
+            .controls-section {
+                flex-direction: column;
+                gap: 8px;
+                align-items: stretch
+            }
+
+            .month-week-selector {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px
+            }
+
+            .week-type-group {
+                width: 100%
+            }
+
+            .week-type-badge {
+                flex: 1;
+                justify-content: center
+            }
+
+            .week-checkboxes {
+                width: 100%;
+                justify-content: space-between
+            }
+
+            .week-check-item {
+                flex: 1;
+                justify-content: center;
+                padding: 8px 6px;
+                font-size: 10px
+            }
+
+            .middle-section {
+                width: 100%;
+                grid-template-columns: 1fr
+            }
+
+            .dropdown-btn {
+                width: 100%;
+                justify-content: center
+            }
+
+            .table-wrapper {
+                overflow-x: auto
+            }
+
+            table {
+                font-size: 11px;
+                min-width: 650px
+            }
+
+            th,
+            td {
+                padding: 8px
+            }
+
+            .name-col {
+                min-width: 120px
+            }
+
+            .email-col {
+                min-width: 150px
+            }
+
+            .form-actions,
+            .add-sheet-form-actions {
+                flex-direction: column-reverse
+            }
+
+            .sheets-modal-content {
+                width: 95%;
+                max-width: 100%
+            }
+
+            .sheet-item {
+                grid-template-columns: 24px minmax(0, 1fr);
+                align-items: flex-start
+            }
+
+            .sheet-body {
+                width: 100%
+            }
+
+            .sheet-id,
+            .sheet-actions {
+                grid-column: 2;
+                justify-self: stretch
+            }
+
+            .cc-modal-content {
+                width: 100%;
+                max-height: 95vh;
+                border-radius: 8px;
+                margin: 0
+            }
+
+            .cc-header {
+                padding: 16px
+            }
+
+            .cc-section {
+                padding: 16px
+            }
+
+            .cc-list {
+                margin: 0 16px 16px;
+                padding: 8px
+            }
+
+            .cc-list-header,
+            .cc-item {
+                grid-template-columns: 28px 1fr;
+            }
+
+            .cc-email,
+            .cc-count,
+            .cc-action-row {
+                grid-column: 2;
+                justify-self: start
+            }
+
+            .cc-action-row {
+                margin-left: 0;
+                justify-content: flex-start
+            }
+
+            .edit-user-btn,
+            .delete-user-btn {
+                font-size: 10px;
+                padding: 6px 8px
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <img src="./assets/Quantum logo-01.png">
+            <h1>Performance Email System</h1>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Controls Bar -->
+            <div class="controls-bar">
+                <!-- Left Section -->
+                <div class="controls-section left-section">
+                    <!-- Month and Week Type -->
+                    <div class="month-week-selector">
+                        <span class="month-label">Month :</span>
+                        <div class="week-type-group">
+                            <div class="week-type-badge active">
+                                <input type="radio" name="week-type" value="5week" id="5week" checked>
+                                <label for="5week">5 week</label>
+                            </div>
+                            <div class="week-type-badge">
+                                <input type="radio" name="week-type" value="4week" id="4week">
+                                <label for="4week">4 Week</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Week Checkboxes -->
+                    <div class="week-checkboxes">
+                        <label class="week-check-item">
+                            <input type="checkbox" class="week-checkbox" id="week1" checked>
+                            <span>1week</span>
+                        </label>
+                        <label class="week-check-item">
+                            <input type="checkbox" class="week-checkbox" id="week2" checked>
+                            <span>2week</span>
+                        </label>
+                        <label class="week-check-item">
+                            <input type="checkbox" class="week-checkbox" id="week3">
+                            <span>3week</span>
+                        </label>
+                        <label class="week-check-item">
+                            <input type="checkbox" class="week-checkbox" id="week4">
+                            <span>4week</span>
+                        </label>
+                        <label class="week-check-item">
+                            <input type="checkbox" class="week-checkbox" id="week5">
+                            <span>5week</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Middle Section -->
+                <div class="controls-section middle-section">
+                    <button class="btn dropdown-btn" id="sheet-btn">
+                        <span>SHEET</span>
+                        <span class="dropdown-icon">▼</span>
+                    </button>
+                    <button class="btn dropdown-btn" id="cc-btn">
+                        <span>CC LIST</span>
+                        <span class="dropdown-icon">▼</span>
+                    </button>
+                    <div class="selected-sheet-display" id="selectedSheetDisplay"><span>Selected:</span> MAY 2026</div>
+                </div>
+
+                <!-- Right Section -->
+                <div class="controls-section right-section">
+                    <div class="controls-buttons">
+                        <button class="add-user-btn" id="add-user-btn">+ ADD NEW</button>
+                        <button class="btn dropdown-btn" id="summary-btn">
+                            <span>SUMMARY</span>
+                            <span class="dropdown-icon">↗</span>
+                        </button>
+                    </div>
+                    <button class="btn btn-primary" id="send-btn">SEND</button>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="checkbox-col">
+                                <input type="checkbox" id="selectAllCheckbox" aria-label="Select all rows">
+                            </th>
+                            <th class="id-col">ID</th>
+                            <th class="name-col">NAME</th>
+                            <th class="email-col">E-MAIL</th>
+                            <th class="status-col">STATUS</th>
+                            <th class="time-col">TIME</th>
+                            <th class="action-col">ACTION</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Right Sidebar - Logs -->
+        <div class="sidebar">
+            <div class="logs-panel">
+                <div class="logs-header">LOGS</div>
+                <div class="logs-content" id="logs-content">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Adding New User -->
+    <div id="addUserModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="userFormTitle">Add New User</h2>
+                <button class="close-btn" id="closeModal">&times;</button>
+            </div>
+            <form id="addUserForm">
+                <div class="form-group">
+                    <input type="text" id="newUserId" placeholder="Input ID" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="newUserName" placeholder="Input Full Name" required>
+                </div>
+                <div class="form-group">
+                    <input type="email" id="newUserEmail" placeholder="Input E-mail address" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="btn-submit" id="userFormSubmitBtn">Add User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Sheets -->
+    <div id="sheetsModal" class="sheets-modal">
+        <div class="sheets-modal-content">
+            <div class="sheets-header">
+                <div class="sheets-header-left">
+                    📋 SHEETS
+                </div>
+                <button class="add-sheet-btn" id="addSheetBtn">
+                    <span>+</span> Add
+                </button>
+            </div>
+            <div class="sheets-list" id="sheetsList">
+                <div class="sheet-item">
+                    <input type="checkbox" class="sheet-checkbox" checked>
+                    <div class="sheet-body">
+                        <a class="sheet-month" href="#" target="_blank" rel="noreferrer">May 2026</a>
+                    </div>
+                    <div class="sheet-id">ID: --</div>
+                    <div class="sheet-actions">
+                        <button class="sheet-edit-action" title="Edit sheet">✎</button>
+                        <button class="sheet-action">🗑️</button>
+                    </div>
+                </div>
+                <div class="sheet-item">
+                    <input type="checkbox" class="sheet-checkbox">
+                    <div class="sheet-body">
+                        <a class="sheet-month" href="#" target="_blank" rel="noreferrer">June 2026</a>
+                    </div>
+                    <div class="sheet-id">ID: --</div>
+                    <div class="sheet-actions">
+                        <button class="sheet-edit-action" title="Edit sheet">✎</button>
+                        <button class="sheet-action">🗑️</button>
+                    </div>
+                </div>
+                <div class="sheet-item">
+                    <input type="checkbox" class="sheet-checkbox">
+                    <div class="sheet-body">
+                        <a class="sheet-month" href="#" target="_blank" rel="noreferrer">July 2026</a>
+                    </div>
+                    <div class="sheet-id">ID: --</div>
+                    <div class="sheet-actions">
+                        <button class="sheet-edit-action" title="Edit sheet">✎</button>
+                        <button class="sheet-action">🗑️</button>
+                    </div>
+                </div>
+                <div class="sheet-item">
+                    <input type="checkbox" class="sheet-checkbox">
+                    <div class="sheet-body">
+                        <a class="sheet-month" href="#" target="_blank" rel="noreferrer">August 2026</a>
+                    </div>
+                    <div class="sheet-id">ID: --</div>
+                    <div class="sheet-actions">
+                        <button class="sheet-edit-action" title="Edit sheet">✎</button>
+                        <button class="sheet-action">🗑️</button>
+                    </div>
+                </div>
+                <div class="sheet-item">
+                    <input type="checkbox" class="sheet-checkbox">
+                    <div class="sheet-body">
+                        <a class="sheet-month" href="#" target="_blank" rel="noreferrer">September 2026</a>
+                    </div>
+                    <div class="sheet-id">ID: --</div>
+                    <div class="sheet-actions">
+                        <button class="sheet-edit-action" title="Edit sheet">✎</button>
+                        <button class="sheet-action">🗑️</button>
+                    </div>
+                </div>
+                <div class="sheet-item">
+                    <input type="checkbox" class="sheet-checkbox">
+                    <div class="sheet-body">
+                        <a class="sheet-month" href="#" target="_blank" rel="noreferrer">October 2026</a>
+                    </div>
+                    <div class="sheet-id">ID: --</div>
+                    <div class="sheet-actions">
+                        <button class="sheet-edit-action" title="Edit sheet">✎</button>
+                        <button class="sheet-action">🗑️</button>
+                    </div>
+                </div>
+                <div class="sheet-item">
+                    <input type="checkbox" class="sheet-checkbox">
+                    <div class="sheet-body">
+                        <a class="sheet-month" href="#" target="_blank" rel="noreferrer">November 2026</a>
+                    </div>
+                    <div class="sheet-id">ID: --</div>
+                    <div class="sheet-actions">
+                        <button class="sheet-edit-action" title="Edit sheet">✎</button>
+                        <button class="sheet-action">🗑️</button>
+                    </div>
+                </div>
+                <div class="sheet-item">
+                    <input type="checkbox" class="sheet-checkbox">
+                    <div class="sheet-body">
+                        <a class="sheet-month" href="#" target="_blank" rel="noreferrer">December 2026</a>
+                    </div>
+                    <div class="sheet-id">ID: --</div>
+                    <div class="sheet-actions">
+                        <button class="sheet-edit-action" title="Edit sheet">✎</button>
+                        <button class="sheet-action">🗑️</button>
+                    </div>
+                </div>
+            </div>
+            <div class="sheets-footer">
+                <button class="sheets-close-btn" id="closeSheetsModal">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Adding New Sheet -->
+    <div id="addSheetFormModal" class="add-sheet-modal">
+        <div class="add-sheet-modal-content">
+            <div class="modal-header">
+                <h2 id="addSheetFormTitle">Add New Sheet</h2>
+                <button class="close-btn" id="closeAddSheetModal">&times;</button>
+            </div>
+            <form id="addSheetForm">
+                <div class="add-sheet-form-group">
+                    <input type="text" id="sheetName" placeholder="Sheet Name" required>
+                </div>
+                <div class="add-sheet-form-group">
+                    <input type="text" id="sheetId" placeholder="Sheet ID" required>
+                </div>
+                <div class="add-sheet-form-group">
+                    <input type="text" id="sheetLink" placeholder="Sheet Link" required>
+                </div>
+                <div class="add-sheet-form-actions">
+                    <button type="button" class="add-sheet-btn-cancel" id="cancelAddSheetBtn">Cancel</button>
+                    <button type="submit" class="add-sheet-btn-submit" id="addSheetSubmitBtn">Add Sheet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for CC List -->
+    <div id="ccModal" class="cc-modal">
+        <div class="cc-modal-content">
+            <div class="cc-header">
+                <h2 class="cc-title">CC List</h2>
+                <div class="cc-summary-actions">
+                    <button class="cc-add-btn" id="addCcBtn">+ Add</button>
+                    <button class="cc-close" id="closeCcModal">&times;</button>
+                </div>
+            </div>
+
+            <div class="cc-section">
+            <div class="cc-summary">
+                <div>
+                    <div class="cc-summary-title">Select CC receivers for outgoing emails</div>
+                    <div class="cc-summary-note">Checkbox, name, email, and today's receive count are listed below.</div>
+                </div>
+                    <div class="cc-summary-count" id="ccSummaryCount">Selected: 0</div>
+                </div>
+
+                <div class="cc-list">
+                    <div class="cc-list-header">
+                        <div>✓</div>
+                        <div>Name</div>
+                        <div>Email</div>
+                        <div style="text-align:right;">Today</div>
+                        <div style="text-align:right;">Action</div>
+                    </div>
+                    <div id="ccListItems"></div>
+                </div>
+            </div>
+
+            <div class="cc-footer">
+                <button class="cc-btn cc-btn-close" id="closeCcBtn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Adding New CC -->
+    <div id="ccFormModal" class="cc-form-modal">
+        <div class="cc-form-modal-content">
+            <div class="modal-header">
+                <h2 class="cc-form-title" id="ccFormTitle">Add CC</h2>
+                <button class="close-btn" id="closeCcFormModal">&times;</button>
+            </div>
+            <form id="ccForm">
+                <div class="form-group">
+                    <input type="text" id="ccId" placeholder="Input ID" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="ccName" placeholder="Input Full Name" required>
+                </div>
+                <div class="form-group">
+                    <input type="email" id="ccEmail" placeholder="Input E-mail address" required>
+                </div>
+                <div class="cc-form-actions">
+                    <button type="button" class="cc-form-cancel" id="cancelCcFormBtn">Cancel</button>
+                    <button type="submit" class="cc-form-submit" id="ccFormSubmitBtn">Add CC</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Modal Elements
+        const modal = document.getElementById('addUserModal');
+        const addUserBtn = document.getElementById('add-user-btn');
+        const closeModalBtn = document.getElementById('closeModal');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const addUserForm = document.getElementById('addUserForm');
+        const tableBody = document.getElementById('table-body');
+        const userFormTitle = document.getElementById('userFormTitle');
+        const userFormSubmitBtn = document.getElementById('userFormSubmitBtn');
+        let userIdCounter = 10;
+        let userFormMode = 'add';
+        let editingUserRow = null;
+
+        function formatSendTime(date = new Date()) {
+            const pad = value => String(value).padStart(2, '0');
+            let hours = date.getHours();
+            const minutes = pad(date.getMinutes());
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12 || 12;
+            return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(hours)}:${minutes} ${ampm}`;
+        }
+
+        function escapeHtml(value = '') {
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function createDefaultReportRows() {
+            return [
+                { dateRange: '01 May - 07 May', taskName: 'Attendance and daily reporting', points: 5 },
+                { dateRange: '08 May - 14 May', taskName: 'Team coordination and follow-up', points: 4 },
+                { dateRange: '15 May - 21 May', taskName: 'Task completion review', points: 6 },
+                { dateRange: '22 May - 31 May', taskName: 'Self-development and support', points: 3 }
+            ];
+        }
+
+        const initialUsers = [
+            { name: 'Zannatul Adan', email: 'adanzannat@gmail.com' },
+            { name: 'Chotan Chowdhury', email: 'chowdhury.chotan24@gmail.com' },
+            { name: 'Ukyaa Marma', email: 'ukyaamarma.cu@gmail.com' },
+            { name: 'Abid Rohman Zenith', email: 'abidrohmanzenith@gmail.com' },
+            { name: 'Keosajai Marma', email: 'keosazaimarma@gmail.com' },
+            { name: 'Md. Rafikul Islam\nHriday', email: 'hriday1833@gmail.com' },
+            { name: 'Otingmang Chak', email: 'utingmong99@gmail.com' },
+            { name: 'Joshaimong Marma', email: 'joshaimongmarma149@gmail.com' },
+            { name: 'Bendikar Bawm', email: 'bawmbendi@gmail.com' },
+            { name: 'Yayoung Murong', email: 'yayoungmro@gmail.com' },
+            { name: 'M. Najmol Islam', email: 'najmolislam1557@gmail.com' },
+            { name: 'Khiamong Chak', email: 'kmdhrubo24@gmail.com' },
+            { name: 'Hlathoaicha Chak', email: 'hlathoaichachak878@gmail.com' },
+            { name: 'Prachurja Chakma', email: 'prachurjachakmap@gmail.com' },
+            { name: 'Kyachaimong Chak', email: 'kyachaimongchak4@gmail.com' },
+            { name: 'Baidaram Tripura', email: 'ramtripura175@gmail.com' },
+            { name: 'Orbish Chakma', email: 'orbishchakma835@gmail.com' },
+            { name: 'Rakib Hasan', email: 'rakibhasanraka188@gmail.com' },
+            { name: 'Subrata Chakma', email: 'subratatuzim178@gmail.com' },
+            { name: 'Forhadul Islam', email: 'forhadulpc@gmail.com' },
+            { name: 'Shuvo Baidya', email: 'm.shuvobaidya710@gmail.com' },
+            { name: 'Rangchang Mro', email: 'chongmro248@gmail.com' },
+            { name: 'Reasad Ali', email: 'mdreasadali1107@gmail.com' },
+            { name: 'Kaingwy Mro', email: 'kaingwym@gmail.com' },
+            { name: 'Kaingpre Mro', email: 'praymrokaing@gmail.com' },
+            { name: 'Md. Haidar Ali', email: 'haidarali45466@gmail.com' },
+            { name: 'Arif Shahriar', email: 'mdarifshahriarbappy@gmail.com' },
+            { name: 'Jebedai Bawm', email: 'bawmjebedai@gmail.com' },
+            { name: 'Rumonjoy Tanchangya', email: 'rumonjoy2025@gmail.com' },
+            { name: 'Soshamoy\nTongchongya', email: 'jovantcg04@gmail.com' },
+            { name: 'M. Mojahid Sheikh', email: 'sk.mujahid8875@gmail.com' },
+            { name: 'Koshai Mro', email: '287kusai@gmail.com' },
+            { name: 'Uthoaingyo Chak', email: 'uthoaingyochak16@gmail.com' },
+            { name: 'Mangrum Mro', email: 'mangrummro6@gmail.com' },
+            { name: 'Denwy Murong', email: 'denwymro@gmail.com' },
+            { name: 'Thonging Khumi', email: 'thongingkhumi@gmail.com' },
+            { name: 'Manok Mro', email: 'mankoh4142@gmail.com' },
+            { name: 'Md. Abul Hossain\nSurjo', email: 'mdabulhossainsurjo23@gmail.com' },
+            { name: 'Prue Mong U Marma', email: 'promong302@gmail.com' },
+            { name: 'Hlathuiching Marma', email: '' },
+            { name: 'Tonu Ray Tripura', email: 'tonuraytripura14@gmail.com' },
+            { name: 'Waingjow Marma', email: 'wainggyomarma@gmail.com' },
+            { name: 'Julinmoy Tripura', email: 'julinmoy@gmail.com' },
+            { name: 'Lalneihsang Bawm', email: '' },
+            { name: 'Rubaiya Sultana', email: '' }
+        ];
+
+        const initialSheets = [
+            { name: 'May 2026', id: '--', link: '#', checked: true, reportRows: createDefaultReportRows() },
+            { name: 'June 2026', id: '--', link: '#', checked: false, reportRows: createDefaultReportRows() },
+            { name: 'July 2026', id: '--', link: '#', checked: false, reportRows: createDefaultReportRows() },
+            { name: 'August 2026', id: '--', link: '#', checked: false, reportRows: createDefaultReportRows() },
+            { name: 'September 2026', id: '--', link: '#', checked: false, reportRows: createDefaultReportRows() },
+            { name: 'October 2026', id: '--', link: '#', checked: false, reportRows: createDefaultReportRows() },
+            { name: 'November 2026', id: '--', link: '#', checked: false, reportRows: createDefaultReportRows() },
+            { name: 'December 2026', id: '--', link: '#', checked: false, reportRows: createDefaultReportRows() }
+        ];
+
+        const CC_STORAGE_KEY = 'performance_email_cc_recipients';
+        const LOGS_STORAGE_KEY = 'performance_email_logs';
+        let appState = {
+            users: initialUsers,
+            sheets: initialSheets,
+            ccRecipients: [],
+            logs: [],
+            selectedSheet: 'MAY 2026',
+            selectedWeeks: [1, 2],
+            weekType: '5week'
+        };
+        let persistStateTimer = null;
+
+        function getTodayKey(date = new Date()) {
+            const pad = value => String(value).padStart(2, '0');
+            return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+        }
+
+        function createDefaultCcRecipients() {
+            return [
+                { id: '01', name: 'Zannatul Adan', email: 'adanzannat@gmail.com', checked: false, dailyCount: 0 },
+                { id: '02', name: 'Chotan Chowdhury', email: 'chowdhury.chotan24@gmail.com', checked: false, dailyCount: 0 },
+                { id: '03', name: 'Ukyaa Marma', email: 'ukyaamarma.cu@gmail.com', checked: false, dailyCount: 0 }
+            ];
+        }
+
+        function normalizeCcState(state) {
+            const todayKey = getTodayKey();
+            const sourceRecipients = Array.isArray(state?.recipients) ? state.recipients : [];
+            const defaults = createDefaultCcRecipients();
+            const merged = defaults.map((fallback, index) => {
+                const stored = sourceRecipients.find(item => item.email === fallback.email);
+                return {
+                    id: stored?.id || fallback.id,
+                    name: stored?.name || fallback.name,
+                    email: stored?.email || fallback.email,
+                    checked: Boolean(stored?.checked),
+                    dailyCount: state?.lastResetDate === todayKey ? Number(stored?.dailyCount || 0) : 0
+                };
+            });
+
+            return {
+                lastResetDate: todayKey,
+                recipients: merged
+            };
+        }
+
+        function loadCcState() {
+            try {
+                const raw = localStorage.getItem(CC_STORAGE_KEY);
+                if (!raw) return normalizeCcState(null);
+                return normalizeCcState(JSON.parse(raw));
+            } catch (error) {
+                return normalizeCcState(null);
+            }
+        }
+
+        let ccState = loadCcState();
+
+        function saveCcState() {
+            try {
+                localStorage.setItem(CC_STORAGE_KEY, JSON.stringify(ccState));
+            } catch (error) {}
+        }
+
+        function schedulePersistAppState() {}
+
+        function getSelectedWeeksFromDom() {
+            return Array.from(document.querySelectorAll('.week-checkbox:checked')).map(checkbox => Number(String(checkbox.id || '').replace('week', ''))).filter(Boolean);
+        }
+
+        function serializeUsersFromDom() {
+            return Array.from(document.querySelectorAll('#table-body tr')).map((row, index) => ({
+                id: row.querySelector('.id-col')?.textContent?.trim() || String(index + 1).padStart(3, '0'),
+                name: row.querySelector('.name-col')?.textContent?.trim() || '',
+                email: row.querySelector('.email-col')?.textContent?.trim() || '',
+                statusType: row.querySelector('.status-col')?.classList.contains('status-sent') ? 'status-sent' : 'status-pending',
+                statusText: row.querySelector('.status-col')?.textContent?.trim() || '⏱ Pending',
+                time: row.querySelector('.time-col')?.textContent?.trim() || 'Not sent'
+            }));
+        }
+
+        function serializeSheetsFromDom() {
+            return Array.from(document.querySelectorAll('#sheetsList .sheet-item')).map((item) => ({
+                name: item.querySelector('.sheet-month')?.textContent?.trim() || '',
+                id: item.querySelector('.sheet-id')?.textContent?.replace(/^ID:\s*/i, '')?.trim() || '',
+                link: item.querySelector('.sheet-month')?.getAttribute('href') || '#',
+                checked: Boolean(item.querySelector('.sheet-checkbox')?.checked)
+            }));
+        }
+
+        function persistAppState() {}
+
+        function renderSheetsFromData(sheets = []) {
+            const sheetsList = document.getElementById('sheetsList');
+            if (!sheetsList) return;
+
+            sheetsList.innerHTML = sheets.map((sheet) => `
+                <div class="sheet-item">
+                    <input type="checkbox" class="sheet-checkbox"${sheet.checked ? ' checked' : ''}>
+                    <div class="sheet-body">
+                        <a class="sheet-month" href="${escapeHtml(sheet.link || '#')}" target="_blank" rel="noreferrer" title="${escapeHtml(sheet.link || '#')}">${escapeHtml(sheet.name || '')}</a>
+                    </div>
+                    <div class="sheet-id">ID: ${escapeHtml(sheet.id || '--')}</div>
+                    <div class="sheet-actions">
+                        <button class="sheet-edit-action" title="Edit sheet">✎</button>
+                        <button class="sheet-action">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+
+            Array.from(sheetsList.querySelectorAll('.sheet-item')).forEach((item, index) => {
+                item._reportRows = Array.isArray(sheets[index]?.reportRows) ? sheets[index].reportRows : createDefaultReportRows();
+            });
+
+            document.querySelectorAll('.sheet-action').forEach((btn) => {
+                btn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const item = this.closest('.sheet-item');
+                    const month = item.querySelector('.sheet-month')?.textContent?.trim() || 'Sheet';
+                    if (confirm(`Delete sheet "${month}"?`)) {
+                        item.style.animation = 'fadeOut 0.3s ease-out';
+                        setTimeout(() => item.remove(), 300);
+                        addLog(`Sheet "${month}" deleted`);
+                        schedulePersistAppState();
+                    }
+                });
+            });
+
+            document.querySelectorAll('.sheet-edit-action').forEach((btn) => {
+                btn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const item = this.closest('.sheet-item');
+                    openEditSheetFormModal(item);
+                });
+            });
+
+            document.querySelectorAll('.sheet-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', function () {
+                    const month = this.closest('.sheet-item').querySelector('.sheet-month')?.textContent?.trim() || 'Sheet';
+                    if (this.checked) {
+                        selectOnlyThisSheet(this);
+                        updateSelectedSheet(month);
+                        addLog(`Sheet "${month}" selected`);
+                    } else {
+                        updateSelectedSheet('No sheet selected');
+                        addLog(`Sheet "${month}" deselected`);
+                    }
+                    schedulePersistAppState();
+                });
+            });
+        }
+
+        function renderLogsFromData(logs = []) {
+            const logsContent = document.getElementById('logs-content');
+            if (!logsContent) return;
+
+            logsContent.innerHTML = logs.length
+                ? logs.map(log => `
+                    <div class="log-entry">
+                        <div class="log-time">${escapeHtml(log.time || '')}</div>
+                        <div class="log-message">${escapeHtml(log.message || '')}</div>
+                    </div>
+                `).join('')
+                : '<div class="log-entry"><div class="log-time">--</div><div class="log-message">No logs available.</div></div>';
+        }
+
+        function loadAppStateFromServer() {
+            ccState = loadCcState();
+            renderUsersFromData(appState.users || initialUsers);
+            renderSheetsFromData(appState.sheets || initialSheets);
+            renderCcList();
+            renderLogsFromData(loadLogsFromStorage());
+
+            const selectedSheetName = String(appState.selectedSheet || '').trim();
+            if (selectedSheetName) {
+                updateSelectedSheet(selectedSheetName);
+            }
+
+            const weekTypeValue = String(appState.weekType || '5week');
+            const weekRadio = document.querySelector(`input[name="week-type"][value="${weekTypeValue}"]`);
+            if (weekRadio) {
+                weekRadio.checked = true;
+                document.querySelectorAll('.week-type-badge').forEach(badge => badge.classList.remove('active'));
+                weekRadio.closest('.week-type-badge')?.classList.add('active');
+            }
+
+            const selectedWeeks = Array.isArray(appState.selectedWeeks) ? appState.selectedWeeks : [1, 2];
+            document.querySelectorAll('.week-checkbox').forEach(checkbox => {
+                const week = Number(String(checkbox.id || '').replace('week', ''));
+                checkbox.checked = selectedWeeks.includes(week);
+            });
+            updateWeekBoxes(weekTypeValue === '5week' ? 5 : 4);
+        }
+
+        function loadLogsFromStorage() {
+            try {
+                const raw = localStorage.getItem(LOGS_STORAGE_KEY);
+                const parsed = raw ? JSON.parse(raw) : [];
+                return Array.isArray(parsed) ? parsed : [];
+            } catch (error) {
+                return [];
+            }
+        }
+
+        function updateCcSummary() {
+            const summary = document.getElementById('ccSummaryCount');
+            if (!summary) return;
+
+            const selectedCount = ccState.recipients.filter(item => item.checked).length;
+            summary.textContent = `Selected: ${selectedCount}`;
+        }
+
+        function getNextCcId() {
+            const maxId = ccState.recipients.reduce((max, recipient) => {
+                const numeric = parseInt(String(recipient.id || '').replace(/\D/g, ''), 10);
+                return Number.isFinite(numeric) ? Math.max(max, numeric) : max;
+            }, 0);
+            return String(maxId + 1).padStart(2, '0');
+        }
+
+        function getCcItemHtml(recipient, index) {
+            return `
+                <div class="cc-item" data-cc-index="${index}">
+                    <input type="checkbox" class="cc-checkbox" data-cc-index="${index}"${recipient.checked ? ' checked' : ''}>
+                    <div class="cc-name">${escapeHtml(recipient.name)}</div>
+                    <div class="cc-email">${escapeHtml(recipient.email)}</div>
+                    <div class="cc-count">Today: ${escapeHtml(recipient.dailyCount)}</div>
+                    <div class="cc-action-row">
+                        <button type="button" class="cc-edit-btn" data-cc-action="edit" data-cc-index="${index}">Edit</button>
+                        <button type="button" class="cc-delete-btn" data-cc-action="delete" data-cc-index="${index}">Delete</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderCcList() {
+            const list = document.getElementById('ccListItems');
+            if (!list) return;
+
+            list.innerHTML = ccState.recipients.map((recipient, index) => getCcItemHtml(recipient, index)).join('');
+
+            updateCcSummary();
+        }
+
+        function getSelectedCcEmails() {
+            return ccState.recipients.filter(item => item.checked && item.email).map(item => item.email);
+        }
+
+        function syncCcFormValues() {
+            const idField = document.getElementById('ccId');
+            const nameField = document.getElementById('ccName');
+            const emailField = document.getElementById('ccEmail');
+            if (!idField || !nameField || !emailField) return;
+            return { idField, nameField, emailField };
+        }
+
+        function openCcFormModal(mode = 'add', recipientIndex = null) {
+            const formModal = document.getElementById('ccFormModal');
+            const title = document.getElementById('ccFormTitle');
+            const submitBtn = document.getElementById('ccFormSubmitBtn');
+            const fields = syncCcFormValues();
+            if (!formModal || !title || !submitBtn || !fields) return;
+
+            formModal.dataset.mode = mode;
+            formModal.dataset.editIndex = recipientIndex === null ? '' : String(recipientIndex);
+
+            if (mode === 'edit' && recipientIndex !== null && ccState.recipients[recipientIndex]) {
+                const recipient = ccState.recipients[recipientIndex];
+                title.textContent = 'Edit CC';
+                submitBtn.textContent = 'Save Changes';
+                fields.idField.value = recipient.id || '';
+                fields.nameField.value = recipient.name || '';
+                fields.emailField.value = recipient.email || '';
+            } else {
+                title.textContent = 'Add CC';
+                submitBtn.textContent = 'Add CC';
+                fields.idField.value = getNextCcId();
+                fields.nameField.value = '';
+                fields.emailField.value = '';
+            }
+
+            formModal.style.display = 'block';
+            fields.idField.focus();
+        }
+
+        function closeCcFormModal() {
+            const formModal = document.getElementById('ccFormModal');
+            const form = document.getElementById('ccForm');
+            if (formModal) formModal.style.display = 'none';
+            if (form) form.reset();
+        }
+
+        function addOrUpdateCcRecipient(payload, editIndex = null) {
+            const normalized = {
+                id: String(payload.id || '').trim(),
+                name: String(payload.name || '').trim(),
+                email: String(payload.email || '').trim(),
+                checked: false,
+                dailyCount: 0
+            };
+
+            if (!normalized.id || !normalized.name || !normalized.email) {
+                return false;
+            }
+
+            if (editIndex !== null && ccState.recipients[editIndex]) {
+                const existing = ccState.recipients[editIndex];
+                ccState.recipients[editIndex] = {
+                    ...existing,
+                    ...normalized,
+                    checked: existing.checked,
+                    dailyCount: existing.dailyCount
+                };
+            } else {
+                ccState.recipients.push(normalized);
+            }
+
+            saveCcState();
+            renderCcList();
+            return true;
+        }
+
+        function incrementCcCounts(emails = []) {
+            const targets = new Set(emails.map(email => String(email || '').trim()).filter(Boolean));
+            if (!targets.size) return;
+
+            ccState.recipients = ccState.recipients.map(recipient => {
+                if (!targets.has(String(recipient.email || '').trim())) return recipient;
+                return {
+                    ...recipient,
+                    dailyCount: Number(recipient.dailyCount || 0) + 1
+                };
+            });
+            saveCcState();
+            renderCcList();
+        }
+
+        function createUserRowHtml(user, index) {
+            const statusType = user.statusType || 'status-pending';
+            const statusText = user.statusText || '⏱ Pending';
+            const sentTime = user.time || 'Not sent';
+            const checkedAttr = user.checked ? ' checked' : '';
+
+            return `
+                <tr>
+                    <td class="checkbox-col"><input type="checkbox" class="row-checkbox"${checkedAttr}></td>
+                    <td class="id-col">${escapeHtml(user.id || String(index + 1).padStart(3, '0'))}</td>
+                    <td class="name-col">${escapeHtml(user.name || '')}</td>
+                    <td class="email-col">${escapeHtml(user.email || '')}</td>
+                    <td class="status-col ${statusType}">${escapeHtml(statusText)}</td>
+                    <td class="time-col">${escapeHtml(sentTime)}</td>
+                    <td class="action-col">
+                        <div class="row-actions">
+                            <button type="button" class="edit-user-btn">Edit</button>
+                            <button type="button" class="delete-user-btn">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+
+        function renderUsersFromData(users = []) {
+            tableBody.innerHTML = users.map((user, index) => createUserRowHtml({
+                ...user,
+                id: String(index + 1).padStart(3, '0')
+            }, index)).join('');
+            document.querySelectorAll('#table-body tr').forEach(bindUserRow);
+            updateHeaderCheckboxState();
+            userIdCounter = users.length + 1;
+        }
+
+        function renderInitialUsers() {
+            renderUsersFromData(initialUsers);
+        }
+
+        function getUserRowData(row) {
+            return {
+                id: row.querySelector('.id-col')?.textContent?.trim() || '',
+                name: row.querySelector('.name-col')?.textContent?.trim() || '',
+                email: row.querySelector('.email-col')?.textContent?.trim() || '',
+                status: row.querySelector('.status-col')?.textContent?.trim() || '',
+                time: row.querySelector('.time-col')?.textContent?.trim() || ''
+            };
+        }
+
+        function setRowSelectionState(row) {
+            const checkbox = row.querySelector('.row-checkbox');
+            if (!checkbox) return;
+            row.classList.toggle('row-selected', checkbox.checked);
+        }
+
+        function updateHeaderCheckboxState() {
+            const headerCheckbox = document.getElementById('selectAllCheckbox');
+            if (!headerCheckbox) return;
+
+            const rowCheckboxes = Array.from(document.querySelectorAll('.row-checkbox'));
+            const checkedCount = rowCheckboxes.filter(checkbox => checkbox.checked).length;
+
+            headerCheckbox.checked = rowCheckboxes.length > 0 && checkedCount === rowCheckboxes.length;
+            headerCheckbox.indeterminate = checkedCount > 0 && checkedCount < rowCheckboxes.length;
+        }
+
+        function ensureRowActions(row) {
+            const actionCell = row.querySelector('.action-col');
+            if (!actionCell || actionCell.querySelector('.row-actions')) return;
+
+            const existingDeleteButton = actionCell.querySelector('.delete-user-btn');
+            const actionsWrapper = document.createElement('div');
+            actionsWrapper.className = 'row-actions';
+
+            const editButton = document.createElement('button');
+            editButton.type = 'button';
+            editButton.className = 'edit-user-btn';
+            editButton.textContent = 'Edit';
+
+            if (existingDeleteButton) {
+                actionCell.innerHTML = '';
+                actionsWrapper.appendChild(editButton);
+                actionsWrapper.appendChild(existingDeleteButton);
+                actionCell.appendChild(actionsWrapper);
+            }
+        }
+
+        function bindUserRow(row) {
+            if (!row) return;
+            ensureRowActions(row);
+            setRowSelectionState(row);
+            updateHeaderCheckboxState();
+        }
+
+        function openUserModal(mode = 'add', row = null) {
+            userFormMode = mode;
+            editingUserRow = row;
+            modal.style.display = 'block';
+
+            const defaultTitle = 'Add New User';
+            const defaultButton = 'Add User';
+            if (mode === 'edit' && row) {
+                const data = getUserRowData(row);
+                userFormTitle.textContent = 'Edit User';
+                userFormSubmitBtn.textContent = 'Save Changes';
+                document.getElementById('newUserId').value = data.id;
+                document.getElementById('newUserName').value = data.name;
+                document.getElementById('newUserEmail').value = data.email;
+            } else {
+                userFormTitle.textContent = defaultTitle;
+                userFormSubmitBtn.textContent = defaultButton;
+                addUserForm.reset();
+            }
+
+            document.getElementById('newUserId').focus();
+        }
+
+        // Sheets Modal Elements
+        const sheetsModal = document.getElementById('sheetsModal');
+        const sheetBtn = document.getElementById('sheet-btn');
+        const closeSheetsModalBtn = document.getElementById('closeSheetsModal');
+        const addSheetFormModal = document.getElementById('addSheetFormModal');
+        const addSheetForm = document.getElementById('addSheetForm');
+        const cancelAddSheetBtn = document.getElementById('cancelAddSheetBtn');
+        const closeAddSheetModalBtn = document.getElementById('closeAddSheetModal');
+        const addSheetFormTitle = document.getElementById('addSheetFormTitle');
+        const addSheetSubmitBtn = document.getElementById('addSheetSubmitBtn');
+        let editingSheetItem = null;
+
+        // Modal Functions
+        function openModal() {
+            openUserModal('add');
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+            addUserForm.reset();
+            userFormMode = 'add';
+            editingUserRow = null;
+            if (userFormTitle) userFormTitle.textContent = 'Add New User';
+            if (userFormSubmitBtn) userFormSubmitBtn.textContent = 'Add User';
+        }
+
+        function openSheetsModal() {
+            sheetsModal.style.display = 'block';
+            addLog('SHEETS modal opened');
+        }
+
+        function closeSheetsModal() {
+            sheetsModal.style.display = 'none';
+        }
+
+        function openAddSheetFormModal() {
+            editingSheetItem = null;
+            if (addSheetFormTitle) addSheetFormTitle.textContent = 'Add New Sheet';
+            if (addSheetSubmitBtn) addSheetSubmitBtn.textContent = 'Add Sheet';
+            addSheetFormModal.style.display = 'block';
+            document.getElementById('sheetName').focus();
+            sheetsModal.style.display = 'none';
+            addLog('Add sheet form opened');
+        }
+
+        function openEditSheetFormModal(item) {
+            if (!item) return;
+            editingSheetItem = item;
+            const sheetName = item.querySelector('.sheet-month')?.textContent?.trim() || '';
+            const sheetId = item.querySelector('.sheet-id')?.textContent?.replace(/^ID:\s*/i, '')?.trim() || '';
+            const sheetLink = item.querySelector('.sheet-month')?.getAttribute('href') || '';
+
+            if (addSheetFormTitle) addSheetFormTitle.textContent = 'Edit Sheet';
+            if (addSheetSubmitBtn) addSheetSubmitBtn.textContent = 'Save Changes';
+
+            document.getElementById('sheetName').value = sheetName;
+            document.getElementById('sheetId').value = sheetId;
+            document.getElementById('sheetLink').value = sheetLink;
+
+            addSheetFormModal.style.display = 'block';
+            document.getElementById('sheetName').focus();
+            sheetsModal.style.display = 'none';
+            addLog(`Edit sheet form opened: ${sheetName}`);
+        }
+
+        function closeAddSheetFormModal() {
+            addSheetFormModal.style.display = 'none';
+            addSheetForm.reset();
+            editingSheetItem = null;
+            if (addSheetFormTitle) addSheetFormTitle.textContent = 'Add New Sheet';
+            if (addSheetSubmitBtn) addSheetSubmitBtn.textContent = 'Add Sheet';
+            openSheetsModal();
+        }
+
+        if (closeAddSheetModalBtn) closeAddSheetModalBtn.addEventListener('click', closeAddSheetFormModal);
+
+        // CC Modal Functions
+        const ccModal = document.getElementById('ccModal');
+        const ccFormModal = document.getElementById('ccFormModal');
+
+        function openCcModal() {
+            if (ccModal) {
+                renderCcList();
+                ccModal.style.display = 'block';
+                ccModal.classList.add('show');
+                addLog('CC list opened');
+            }
+        }
+
+        function closeCcModal() {
+            if (ccModal) {
+                ccModal.style.display = 'none';
+                ccModal.classList.remove('show');
+                addLog('CC list closed');
+            }
+        }
+
+        if (ccModal) {
+            ccModal.addEventListener('change', function (event) {
+                const checkbox = event.target.closest('.cc-checkbox');
+                if (!checkbox) return;
+                const index = Number(checkbox.dataset.ccIndex);
+                if (Number.isNaN(index) || !ccState.recipients[index]) return;
+                ccState.recipients[index].checked = checkbox.checked;
+                saveCcState();
+                updateCcSummary();
+            });
+
+            ccModal.addEventListener('click', function (event) {
+                const actionButton = event.target.closest('[data-cc-action]');
+                if (!actionButton) return;
+                const index = Number(actionButton.dataset.ccIndex);
+                if (Number.isNaN(index) || !ccState.recipients[index]) return;
+
+                const action = actionButton.dataset.ccAction;
+                if (action === 'edit') {
+                    openCcFormModal('edit', index);
+                    return;
+                }
+
+                if (action === 'delete') {
+                    const recipient = ccState.recipients[index];
+                    if (confirm(`Delete CC "${recipient.name}" (${recipient.email})?`)) {
+                        ccState.recipients.splice(index, 1);
+                        saveCcState();
+                        renderCcList();
+                        addLog(`CC deleted: ${recipient.name} (${recipient.email})`);
+                    }
+                }
+            });
+
+            window.addEventListener('click', function (event) {
+                if (event.target === ccModal) {
+                    closeCcModal();
+                }
+            });
+        }
+
+        const closeCcModalBtn = document.getElementById('closeCcModal');
+        const closeCcBtn = document.getElementById('closeCcBtn');
+        const addCcBtn = document.getElementById('addCcBtn');
+        const closeCcFormModalBtn = document.getElementById('closeCcFormModal');
+        const cancelCcFormBtn = document.getElementById('cancelCcFormBtn');
+        const ccForm = document.getElementById('ccForm');
+        if (closeCcModalBtn) closeCcModalBtn.addEventListener('click', closeCcModal);
+        if (closeCcBtn) closeCcBtn.addEventListener('click', closeCcModal);
+        if (addCcBtn) addCcBtn.addEventListener('click', function () {
+            openCcFormModal('add');
+        });
+        if (closeCcFormModalBtn) closeCcFormModalBtn.addEventListener('click', closeCcFormModal);
+        if (cancelCcFormBtn) cancelCcFormBtn.addEventListener('click', closeCcFormModal);
+
+        if (ccForm) {
+            ccForm.addEventListener('submit', function (event) {
+                event.preventDefault();
+                const formModal = document.getElementById('ccFormModal');
+                const mode = formModal?.dataset.mode || 'add';
+                const editIndex = formModal?.dataset.editIndex !== '' ? Number(formModal?.dataset.editIndex) : null;
+
+                const payload = {
+                    id: document.getElementById('ccId').value.trim(),
+                    name: document.getElementById('ccName').value.trim(),
+                    email: document.getElementById('ccEmail').value.trim()
+                };
+
+                if (!payload.id || !payload.name || !payload.email) {
+                    alert('Please fill all fields');
+                    return;
+                }
+
+                const ok = addOrUpdateCcRecipient(payload, mode === 'edit' ? editIndex : null);
+                if (!ok) {
+                    alert('Please fill all fields');
+                    return;
+                }
+
+                closeCcFormModal();
+                addLog(mode === 'edit' ? `CC updated: ${payload.name}` : `CC added: ${payload.name}`);
+                alert(mode === 'edit' ? `CC "${payload.name}" updated successfully!` : `CC "${payload.name}" added successfully!`);
+            });
+        }
+
+        if (ccFormModal) {
+            window.addEventListener('click', function (event) {
+                if (event.target === ccFormModal) {
+                    closeCcFormModal();
+                }
+            });
+        }
+
+        // Event Listeners for Modal
+        addUserBtn.addEventListener('click', openModal);
+        closeModalBtn.addEventListener('click', closeModal);
+        cancelBtn.addEventListener('click', closeModal);
+
+        // Event Listeners for Sheets Modal
+        sheetBtn.addEventListener('click', openSheetsModal);
+        closeSheetsModalBtn.addEventListener('click', closeSheetsModal);
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function (event) {
+            if (event.target === modal) {
+                closeModal();
+            }
+            if (event.target === sheetsModal) {
+                closeSheetsModal();
+            }
+            if (event.target === addSheetFormModal) {
+                closeAddSheetFormModal();
+            }
+        });
+
+        // Sheet item actions
+        document.querySelectorAll('.sheet-action').forEach((btn, index) => {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                const item = this.closest('.sheet-item');
+                const month = item.querySelector('.sheet-month')?.textContent?.trim() || 'Sheet';
+                if (confirm(`Delete sheet "${month}"?`)) {
+                    item.style.animation = 'fadeOut 0.3s ease-out';
+                    setTimeout(() => item.remove(), 300);
+                    addLog(`Sheet "${month}" deleted`);
+                }
+            });
+        });
+
+        document.querySelectorAll('.sheet-edit-action').forEach((btn) => {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                const item = this.closest('.sheet-item');
+                openEditSheetFormModal(item);
+            });
+        });
+
+
+        function updateSelectedSheet(name) {
+            const selectedSheetDisplay = document.getElementById('selectedSheetDisplay');
+            if (selectedSheetDisplay) {
+                selectedSheetDisplay.innerHTML = `<span>Selected:</span> ${name || 'No sheet selected'}`;
+            }
+        }
+
+        function getSelectedSheetItem() {
+            return document.querySelector('.sheet-checkbox:checked')?.closest('.sheet-item') || null;
+        }
+
+        function getSelectedSheetInfo() {
+            const item = getSelectedSheetItem();
+            if (!item) {
+                return { ok: false, reason: 'Sheet setup is not done.', fix: 'Open the SHEETS list and select one sheet first.' };
+            }
+
+            const name = item.querySelector('.sheet-month')?.textContent?.trim() || '';
+            const link = item.querySelector('.sheet-month')?.getAttribute('href') || '';
+            const id = item.querySelector('.sheet-id')?.textContent?.replace(/^ID:\s*/i, '')?.trim() || '';
+
+            if (!name || name === 'No sheet selected') {
+                return { ok: false, reason: 'Sheet name is missing.', fix: 'Edit or reselect a sheet name before sending.' };
+            }
+
+            if (!link || link === '#') {
+                return { ok: false, reason: 'Sheet link is not set.', fix: 'Open SHEETS and add a valid Google Sheet link.' };
+            }
+
+            if (!id || id === '--') {
+                return { ok: false, reason: 'Sheet ID is not set.', fix: 'Edit the sheet and add a valid Sheet ID.' };
+            }
+
+            const rows = Array.isArray(item._reportRows) && item._reportRows.length ? item._reportRows : createDefaultReportRows();
+            const totalPoints = rows.reduce((sum, row) => sum + Number(row?.points || 0), 0);
+
+            return {
+                ok: true,
+                name,
+                link,
+                id,
+                rows,
+                totalPoints,
+                reducePoint: 0,
+                remarks: 'Keep it up!',
+                note: 'This report was created automatically.'
+            };
+        }
+
+        function selectOnlyThisSheet(activeCheckbox) {
+            document.querySelectorAll('.sheet-checkbox').forEach(box => {
+                if (box !== activeCheckbox) box.checked = false;
+            });
+        }
+
+        // Sheet checkboxes
+        document.querySelectorAll('.sheet-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', function () {
+                const month = this.closest('.sheet-item').querySelector('.sheet-month')?.textContent?.trim() || 'Sheet';
+                if (this.checked) {
+                    selectOnlyThisSheet(this);
+                    updateSelectedSheet(month);
+                    addLog(`Sheet "${month}" selected`);
+                } else {
+                    updateSelectedSheet('No sheet selected');
+                    addLog(`Sheet "${month}" deselected`);
+                }
+                schedulePersistAppState();
+            });
+        });
+
+        // Add Sheet Form Modal Event Listeners
+        document.getElementById('addSheetBtn').addEventListener('click', openAddSheetFormModal);
+        cancelAddSheetBtn.addEventListener('click', closeAddSheetFormModal);
+
+        // Add Sheet Form Submit
+        addSheetForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const sheetName = document.getElementById('sheetName').value.trim();
+            const sheetId = document.getElementById('sheetId').value.trim();
+            const sheetLink = document.getElementById('sheetLink').value.trim();
+
+            if (!sheetName || !sheetId || !sheetLink) {
+                alert('Please fill all fields');
+                return;
+            }
+
+                if (editingSheetItem) {
+                    const linkAnchor = editingSheetItem.querySelector('.sheet-month');
+                    const idCell = editingSheetItem.querySelector('.sheet-id');
+                    if (linkAnchor) {
+                        linkAnchor.textContent = sheetName;
+                        linkAnchor.href = sheetLink;
+                        linkAnchor.title = sheetLink;
+                    }
+                    if (idCell) idCell.textContent = `ID: ${sheetId}`;
+                    addLog(`Sheet "${sheetName}" updated`);
+                    alert(`Sheet "${sheetName}" updated successfully!`);
+                    schedulePersistAppState();
+                } else {
+                const newSheet = document.createElement('div');
+                newSheet.className = 'sheet-item';
+                newSheet._reportRows = createDefaultReportRows();
+                newSheet.innerHTML = `
+                    <input type="checkbox" class="sheet-checkbox">
+                    <div class="sheet-body">
+                        <a class="sheet-month" href="${escapeHtml(sheetLink)}" target="_blank" rel="noreferrer" title="${escapeHtml(sheetLink)}">${escapeHtml(sheetName)}</a>
+                    </div>
+                    <div class="sheet-id">ID: ${escapeHtml(sheetId)}</div>
+                    <div class="sheet-actions">
+                        <button class="sheet-edit-action" title="Edit sheet">✎</button>
+                        <button class="sheet-action">🗑️</button>
+                    </div>
+                `;
+
+                document.getElementById('sheetsList').appendChild(newSheet);
+
+                newSheet.querySelector('.sheet-action').addEventListener('click', function (e) {
+                    e.preventDefault();
+                    if (confirm(`Delete sheet "${sheetName}"?`)) {
+                        newSheet.style.animation = 'fadeOut 0.3s ease-out';
+                        setTimeout(() => newSheet.remove(), 300);
+                        addLog(`Sheet "${sheetName}" deleted`);
+                        schedulePersistAppState();
+                    }
+                });
+
+                newSheet.querySelector('.sheet-edit-action').addEventListener('click', function (e) {
+                    e.preventDefault();
+                    openEditSheetFormModal(newSheet);
+                });
+
+                newSheet.querySelector('.sheet-checkbox').addEventListener('change', function () {
+                    if (this.checked) {
+                        selectOnlyThisSheet(this);
+                        updateSelectedSheet(sheetName);
+                        addLog(`Sheet "${sheetName}" selected`);
+                    } else {
+                        updateSelectedSheet('No sheet selected');
+                        addLog(`Sheet "${sheetName}" deselected`);
+                    }
+                });
+
+                addLog(`New sheet "${sheetName}" added`);
+                alert(`Sheet "${sheetName}" added successfully!`);
+                schedulePersistAppState();
+            }
+
+            closeAddSheetFormModal();
+        });
+
+        // Add User Form Submit
+        addUserForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const id = document.getElementById('newUserId').value.trim();
+            const name = document.getElementById('newUserName').value.trim();
+            const email = document.getElementById('newUserEmail').value.trim();
+
+            if (!id || !name || !email) {
+                alert('Please fill all fields');
+                return;
+            }
+
+            if (userFormMode === 'edit' && editingUserRow) {
+                editingUserRow.querySelector('.id-col').textContent = id;
+                editingUserRow.querySelector('.name-col').textContent = name;
+                editingUserRow.querySelector('.email-col').textContent = email;
+                bindUserRow(editingUserRow);
+                addLog(`User updated: ${name}`);
+                alert(`User "${name}" updated successfully!`);
+                schedulePersistAppState();
+            } else {
+                // Add new row to table
+                const newRow = document.createElement('tr');
+                const statusType = Math.random() > 0.5 ? 'status-sent' : 'status-pending';
+                const statusText = statusType === 'status-sent' ? '✓ Sent' : '⏱ Pending';
+                const sentTime = statusType === 'status-sent' ? formatSendTime() : 'Not sent';
+
+                newRow.innerHTML = createUserRowHtml({
+                    id,
+                    name,
+                    email,
+                    statusType,
+                    statusText,
+                    time: sentTime,
+                    checked: false
+                }, tableBody.querySelectorAll('tr').length);
+
+                tableBody.appendChild(newRow);
+                bindUserRow(newRow);
+
+                addLog(`New user added: ${name}`);
+                alert(`User "${name}" added successfully!`);
+                schedulePersistAppState();
+            }
+
+            closeModal();
+        });
+
+        // Week Type Change Handler
+        document.querySelectorAll('input[name="week-type"]').forEach(radio => {
+            radio.addEventListener('change', function () {
+                // Update active state on badges
+                document.querySelectorAll('.week-type-badge').forEach(badge => {
+                    badge.classList.remove('active');
+                });
+                this.closest('.week-type-badge').classList.add('active');
+
+                const weekCount = this.value === '5week' ? 5 : 4;
+                updateWeekBoxes(weekCount);
+                addLog(`Switched to ${this.value}`);
+                schedulePersistAppState();
+            });
+        });
+
+        // Update week boxes based on selection
+        function updateWeekBoxes(count) {
+            const weekCheckboxes = document.querySelectorAll('.week-checkboxes');
+
+            weekCheckboxes.forEach(container => {
+                const items = container.querySelectorAll('.week-check-item');
+                items.forEach((item, index) => {
+                    if (index < count) {
+                        item.style.display = 'flex';
+                    } else {
+                        item.style.display = 'none';
+                        item.querySelector('input').checked = false;
+                    }
+                });
+            });
+
+            addLog(`Week boxes updated to ${count}`);
+        }
+
+        // Set initial active state
+        document.querySelector('input[name="week-type"]:checked').closest('.week-type-badge').classList.add('active');
+        updateWeekBoxes(5); // Default to 5 weeks
+
+        renderInitialUsers();
+        renderCcList();
+
+        tableBody.addEventListener('change', function (e) {
+            if (e.target.classList.contains('row-checkbox')) {
+                const row = e.target.closest('tr');
+                setRowSelectionState(row);
+                const userName = row.querySelector('.name-col')?.textContent?.trim() || 'Unknown user';
+                addLog(`${userName} ${e.target.checked ? 'selected' : 'deselected'}`);
+                updateHeaderCheckboxState();
+                schedulePersistAppState();
+            }
+        });
+
+        tableBody.addEventListener('click', function (e) {
+            const editBtn = e.target.closest('.edit-user-btn');
+            const deleteBtn = e.target.closest('.delete-user-btn');
+
+            if (editBtn) {
+                const row = editBtn.closest('tr');
+                openUserModal('edit', row);
+                return;
+            }
+
+            if (deleteBtn) {
+                const row = deleteBtn.closest('tr');
+                const userName = row.querySelector('.name-col')?.textContent?.trim() || 'Unknown user';
+                const userEmail = row.querySelector('.email-col')?.textContent?.trim() || 'No email';
+                if (confirm(`Delete user "${userName}" (${userEmail})?`)) {
+                    row.style.animation = 'fadeOut 0.3s ease-out';
+                    setTimeout(() => row.remove(), 300);
+                    addLog(`User deleted: ${userName} (${userEmail})`);
+                    updateHeaderCheckboxState();
+                    schedulePersistAppState();
+                }
+            }
+        });
+
+        // Button Click Handlers
+        document.getElementById('cc-btn').addEventListener('click', function () {
+            openCcModal();
+        });
+
+        document.getElementById('summary-btn').addEventListener('click', function () {
+            window.open('/summary', '_blank', 'noopener,noreferrer');
+        });
+
+        async function sendSelectedEmails() {
+            const selectedRows = Array.from(document.querySelectorAll('#table-body tr')).filter(row => {
+                const checkbox = row.querySelector('.row-checkbox');
+                return checkbox && checkbox.checked;
+            });
+
+            if (selectedRows.length === 0) {
+                const reason = 'No user selected.';
+                const fix = 'Select at least one user row before sending.';
+                alert(`${reason}\nFix: ${fix}`);
+                addLog(`Email send blocked: ${reason} Fix: ${fix}`);
+                schedulePersistAppState();
+                return;
+            }
+
+            const sheetInfo = getSelectedSheetInfo();
+            if (!sheetInfo.ok) {
+                alert(`${sheetInfo.reason}\nFix: ${sheetInfo.fix}`);
+                addLog(`Email send blocked: ${sheetInfo.reason} Fix: ${sheetInfo.fix}`);
+                schedulePersistAppState();
+                return;
+            }
+
+            const invalidRows = selectedRows.filter(row => {
+                const name = row.querySelector('.name-col')?.textContent?.trim() || '';
+                return !name;
+            });
+
+            if (invalidRows.length > 0) {
+                const reason = 'Selected rows are missing a name.';
+                const fix = 'Edit the selected users and make sure every selected row has a name.';
+                alert(`${reason}\nFix: ${fix}`);
+                addLog(`Email send blocked: ${reason} Fix: ${fix}`);
+                schedulePersistAppState();
+                return;
+            }
+
+            const sendBtn = document.getElementById('send-btn');
+            const originalText = sendBtn.textContent;
+            sendBtn.disabled = true;
+            sendBtn.textContent = 'SENDING...';
+
+            try {
+                const recipients = selectedRows.map(row => ({
+                    id: row.querySelector('.id-col')?.textContent?.trim() || '',
+                    name: row.querySelector('.name-col')?.textContent?.trim() || '',
+                    email: row.querySelector('.email-col')?.textContent?.trim() || ''
+                }));
+
+                const response = await fetch('http://localhost:3001/api/send-progress-emails', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        recipients,
+                        ccEmails: getSelectedCcEmails(),
+                        subjectPrefix: 'Monthly Progress Report',
+                        reportTitle: 'PERFORMANCE EMAIL SYSTEM',
+                        period: sheetInfo.name || document.getElementById('selectedSheetDisplay')?.textContent?.replace('Selected:', '').trim() || 'Progress Report',
+                        sheetName: sheetInfo.name || '',
+                        sheetId: sheetInfo.id || '',
+                        sheetLink: sheetInfo.link || '',
+                        totalLabel: 'Total Points',
+                        totalPoints: sheetInfo.totalPoints || 0,
+                        reducePoint: sheetInfo.reducePoint || 0,
+                        remarks: sheetInfo.remarks || 'Keep it up!',
+                        note: sheetInfo.note || 'This report was created automatically.'
+                    })
+                });
+
+                const data = await response.json();
+                if (!response.ok || !data.ok) {
+                    const failureError = new Error(data.error || 'Failed to send emails');
+                    failureError.details = data;
+                    throw failureError;
+                }
+
+                const successful = new Map((data.results || [])
+                    .filter(item => item.success)
+                    .map(item => [item.email, item]));
+
+                (data.results || [])
+                    .filter(item => !item.success)
+                    .forEach(item => {
+                        const reason = item.reason || item.error || 'Unknown error';
+                        const fix = item.fixSuggestion || 'Check SMTP settings and recipient data.';
+                        addLog(`Email failed for ${item.email || item.name || 'unknown'}: ${reason}. Fix: ${fix}`);
+                    });
+
+                selectedRows.forEach(row => {
+                    const email = row.querySelector('.email-col')?.textContent?.trim() || '';
+                    const result = successful.get(email);
+                    if (result) {
+                        const statusCell = row.querySelector('.status-col');
+                        const timeCell = row.querySelector('.time-col');
+                        if (statusCell) {
+                            statusCell.textContent = '✓ Sent';
+                            statusCell.className = 'status-col status-sent';
+                        }
+                        if (timeCell) {
+                            timeCell.textContent = result.sentAt || formatSendTime();
+                        }
+                    }
+                });
+
+                incrementCcCounts(getSelectedCcEmails());
+                schedulePersistAppState();
+
+                addLog(`Sent ${data.sentCount} emails successfully`);
+                alert(`Sending complete: ${data.sentCount} sent, ${data.failedCount || 0} failed`);
+            } catch (error) {
+                console.error(error);
+                const details = error?.details || {};
+                const reason = details.reason || error.message || 'Unknown error';
+                const fix = details.fixSuggestion || 'Check SMTP settings and recipient data.';
+                alert(`Email send failed: ${reason}\nFix: ${fix}`);
+                addLog(`Email send failed: ${reason}. Fix: ${fix}`);
+                if (details.errorCode) {
+                    addLog(`Error code: ${details.errorCode}`);
+                }
+                schedulePersistAppState();
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.textContent = originalText;
+            }
+        }
+
+        document.getElementById('send-btn').addEventListener('click', sendSelectedEmails);
+
+        // Week Checkboxes
+        document.querySelectorAll('.week-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', function () {
+                const week = this.id.replace('week', '');
+                addLog(`Week ${week} ${this.checked ? 'selected' : 'deselected'}`);
+                schedulePersistAppState();
+            });
+        });
+
+        // Add Log Entry
+        function addLog(message) {
+            const logsContent = document.getElementById('logs-content');
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            logEntry.innerHTML = `
+                <div class="log-time">${timeString}</div>
+                <div class="log-message">${message}</div>
+            `;
+
+            logsContent.insertBefore(logEntry, logsContent.firstChild);
+
+            // Keep only last 15 entries
+            const entries = logsContent.querySelectorAll('.log-entry');
+            if (entries.length > 15) {
+                entries[entries.length - 1].remove();
+            }
+
+            const nextLogs = [
+                { time: timeString, message },
+                ...loadLogsFromStorage()
+            ].slice(0, 15);
+
+            try {
+                localStorage.setItem(LOGS_STORAGE_KEY, JSON.stringify(nextLogs));
+            } catch (error) {}
+        }
+
+        // Select All / Deselect All
+        const headerCheckbox = document.getElementById('selectAllCheckbox');
+        if (headerCheckbox) {
+            headerCheckbox.addEventListener('change', function () {
+                document.querySelectorAll('.row-checkbox').forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                    setRowSelectionState(checkbox.closest('tr'));
+                });
+                this.indeterminate = false;
+                addLog(this.checked ? 'All rows selected' : 'All rows deselected');
+                schedulePersistAppState();
+            });
+            updateHeaderCheckboxState();
+        }
+
+        // Keyboard shortcut to close modal
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                closeModal();
+                closeSheetsModal();
+                closeAddSheetFormModal();
+                closeCcFormModal();
+                closeCcModal();
+            }
+        });
+
+        // Initialize
+        window.addEventListener('load', async function () {
+            await loadAppStateFromServer();
+            const checkedSheet = document.querySelector('.sheet-checkbox:checked');
+            if (checkedSheet) {
+                updateSelectedSheet(checkedSheet.closest('.sheet-item').querySelector('.sheet-month')?.textContent?.trim());
+            }
+            addLog('System started');
+        });
+    </script>
+
+</body>
+
+</html>
