@@ -1797,6 +1797,12 @@
                 <div class="add-sheet-form-group">
                     <input type="text" id="sheetLink" placeholder="Sheet Link" required>
                 </div>
+                <div class="add-sheet-form-group">
+                    <select id="sheetWeekType" required>
+                        <option value="4week">4 Week</option>
+                        <option value="5week" selected>5 Week</option>
+                    </select>
+                </div>
                 <div class="add-sheet-form-actions">
                     <button type="button" class="add-sheet-btn-cancel" id="cancelAddSheetBtn">Cancel</button>
                     <button type="submit" class="add-sheet-btn-submit" id="addSheetSubmitBtn">Add Sheet</button>
@@ -1817,11 +1823,12 @@
             </div>
 
             <div class="cc-section">
-            <div class="cc-summary">
-                <div>
-                    <div class="cc-summary-title">Select CC receivers for outgoing emails</div>
-                    <div class="cc-summary-note">Checkbox, name, email, and today's receive count are listed below.</div>
-                </div>
+                <div class="cc-summary">
+                    <div>
+                        <div class="cc-summary-title">Select CC receivers for outgoing emails</div>
+                        <div class="cc-summary-note">Checkbox, name, email, and today's receive count are listed below.
+                        </div>
+                    </div>
                     <div class="cc-summary-count" id="ccSummaryCount">Selected: 0</div>
                 </div>
 
@@ -1958,18 +1965,16 @@
         ];
 
         const initialSheets = [
-            { name: 'May 2026', id: '--', link: '#', checked: true, reportRows: createDefaultReportRows() },
-            { name: 'June 2026', id: '--', link: '#', checked: false, reportRows: createDefaultReportRows() },
-            { name: 'July 2026', id: '--', link: '#', checked: false, reportRows: createDefaultReportRows() },
-            { name: 'August 2026', id: '--', link: '#', checked: false, reportRows: createDefaultReportRows() },
-            { name: 'September 2026', id: '--', link: '#', checked: false, reportRows: createDefaultReportRows() },
-            { name: 'October 2026', id: '--', link: '#', checked: false, reportRows: createDefaultReportRows() },
-            { name: 'November 2026', id: '--', link: '#', checked: false, reportRows: createDefaultReportRows() },
-            { name: 'December 2026', id: '--', link: '#', checked: false, reportRows: createDefaultReportRows() }
+            { name: 'May 2026', id: '--', link: '#', checked: true, weekType: '5week', reportRows: createDefaultReportRows() },
+            { name: 'June 2026', id: '--', link: '#', checked: false, weekType: '5week', reportRows: createDefaultReportRows() },
+            { name: 'July 2026', id: '--', link: '#', checked: false, weekType: '5week', reportRows: createDefaultReportRows() },
+            { name: 'August 2026', id: '--', link: '#', checked: false, weekType: '5week', reportRows: createDefaultReportRows() },
+            { name: 'September 2026', id: '--', link: '#', checked: false, weekType: '5week', reportRows: createDefaultReportRows() },
+            { name: 'October 2026', id: '--', link: '#', checked: false, weekType: '5week', reportRows: createDefaultReportRows() },
+            { name: 'November 2026', id: '--', link: '#', checked: false, weekType: '5week', reportRows: createDefaultReportRows() },
+            { name: 'December 2026', id: '--', link: '#', checked: false, weekType: '5week', reportRows: createDefaultReportRows() }
         ];
 
-        const CC_STORAGE_KEY = 'performance_email_cc_recipients';
-        const LOGS_STORAGE_KEY = 'performance_email_logs';
         let appState = {
             users: initialUsers,
             sheets: initialSheets,
@@ -1977,7 +1982,8 @@
             logs: [],
             selectedSheet: 'MAY 2026',
             selectedWeeks: [1, 2],
-            weekType: '5week'
+            weekType: '5week',
+            ccLastResetDate: getTodayKey()
         };
         let persistStateTimer = null;
 
@@ -2016,27 +2022,39 @@
         }
 
         function loadCcState() {
-            try {
-                const raw = localStorage.getItem(CC_STORAGE_KEY);
-                if (!raw) return normalizeCcState(null);
-                return normalizeCcState(JSON.parse(raw));
-            } catch (error) {
-                return normalizeCcState(null);
-            }
+            return normalizeCcState({
+                recipients: Array.isArray(appState.ccRecipients) && appState.ccRecipients.length ? appState.ccRecipients : createDefaultCcRecipients(),
+                lastResetDate: appState.ccLastResetDate || getTodayKey()
+            });
         }
 
         let ccState = loadCcState();
 
         function saveCcState() {
-            try {
-                localStorage.setItem(CC_STORAGE_KEY, JSON.stringify(ccState));
-            } catch (error) {}
+            appState.ccRecipients = Array.isArray(ccState.recipients) ? ccState.recipients : [];
+            appState.ccLastResetDate = ccState.lastResetDate || getTodayKey();
+            schedulePersistAppState();
         }
 
-        function schedulePersistAppState() {}
+        function schedulePersistAppState() {
+            clearTimeout(persistStateTimer);
+            persistStateTimer = setTimeout(() => {
+                persistAppState().catch((error) => console.error('Persist failed', error));
+            }, 250);
+        }
 
         function getSelectedWeeksFromDom() {
             return Array.from(document.querySelectorAll('.week-checkbox:checked')).map(checkbox => Number(String(checkbox.id || '').replace('week', ''))).filter(Boolean);
+        }
+
+        function getWeekCountFromMode() {
+            const checkedMode = document.querySelector('input[name="week-type"]:checked')?.value || '5week';
+            return checkedMode === '4week' ? 4 : 5;
+        }
+
+        function getSelectedWeeksForSend() {
+            const weekCount = getWeekCountFromMode();
+            return Array.from({ length: weekCount }, (_, index) => index + 1);
         }
 
         function serializeUsersFromDom() {
@@ -2055,18 +2073,53 @@
                 name: item.querySelector('.sheet-month')?.textContent?.trim() || '',
                 id: item.querySelector('.sheet-id')?.textContent?.replace(/^ID:\s*/i, '')?.trim() || '',
                 link: item.querySelector('.sheet-month')?.getAttribute('href') || '#',
-                checked: Boolean(item.querySelector('.sheet-checkbox')?.checked)
+                checked: Boolean(item.querySelector('.sheet-checkbox')?.checked),
+                weekType: String(item.dataset.weekType || '5week')
             }));
         }
 
-        function persistAppState() {}
+        async function persistAppState() {
+            const selectedSheetName = document.querySelector('.sheet-checkbox:checked')?.closest('.sheet-item')?.querySelector('.sheet-month')?.textContent?.trim() || appState.selectedSheet || 'No sheet selected';
+            const payload = {
+                selectedSheet: selectedSheetName,
+                selectedWeeks: getSelectedWeeksFromDom(),
+                weekType: document.querySelector('input[name="week-type"]:checked')?.value || appState.weekType || '5week',
+                users: serializeUsersFromDom(),
+                sheets: serializeSheetsFromDom(),
+                ccRecipients: Array.isArray(ccState.recipients) ? ccState.recipients : [],
+                ccLastResetDate: ccState.lastResetDate || getTodayKey(),
+                logs: Array.isArray(appState.logs) ? appState.logs.slice(0, 50) : [],
+                lastUpdated: formatSendTime()
+            };
+
+            const response = await fetch('http://localhost:3001/api/state', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text().catch(() => '');
+                throw new Error(errorText || 'Failed to persist state.');
+            }
+
+            const data = await response.json().catch(() => null);
+            if (data?.ok && data.state) {
+                appState = {
+                    ...appState,
+                    ...data.state
+                };
+            }
+        }
 
         function renderSheetsFromData(sheets = []) {
             const sheetsList = document.getElementById('sheetsList');
             if (!sheetsList) return;
 
             sheetsList.innerHTML = sheets.map((sheet) => `
-                <div class="sheet-item">
+                <div class="sheet-item" data-week-type="${escapeHtml(sheet.weekType || '5week')}">
                     <input type="checkbox" class="sheet-checkbox"${sheet.checked ? ' checked' : ''}>
                     <div class="sheet-body">
                         <a class="sheet-month" href="${escapeHtml(sheet.link || '#')}" target="_blank" rel="noreferrer" title="${escapeHtml(sheet.link || '#')}">${escapeHtml(sheet.name || '')}</a>
@@ -2081,6 +2134,7 @@
 
             Array.from(sheetsList.querySelectorAll('.sheet-item')).forEach((item, index) => {
                 item._reportRows = Array.isArray(sheets[index]?.reportRows) ? sheets[index].reportRows : createDefaultReportRows();
+                item.dataset.weekType = String(sheets[index]?.weekType || '5week');
             });
 
             document.querySelectorAll('.sheet-action').forEach((btn) => {
@@ -2135,12 +2189,40 @@
                 : '<div class="log-entry"><div class="log-time">--</div><div class="log-message">No logs available.</div></div>';
         }
 
-        function loadAppStateFromServer() {
-            ccState = loadCcState();
-            renderUsersFromData(appState.users || initialUsers);
-            renderSheetsFromData(appState.sheets || initialSheets);
+        async function loadAppStateFromServer() {
+            try {
+                const response = await fetch('http://localhost:3001/api/state');
+                if (!response.ok) {
+                    throw new Error(`Failed to load state (${response.status})`);
+                }
+
+                const data = await response.json();
+                const serverState = data?.state || {};
+                appState = {
+                    ...appState,
+                    ...serverState
+                };
+            } catch (error) {
+                console.error('Failed to load state from server', error);
+            }
+
+            appState.users = Array.isArray(appState.users) && appState.users.length ? appState.users : initialUsers;
+            appState.sheets = Array.isArray(appState.sheets) && appState.sheets.length ? appState.sheets : initialSheets;
+            appState.logs = Array.isArray(appState.logs) ? appState.logs : [];
+            appState.selectedWeeks = Array.isArray(appState.selectedWeeks) ? appState.selectedWeeks : [1, 2];
+            appState.weekType = String(appState.weekType || '5week');
+            appState.selectedSheet = String(appState.selectedSheet || '');
+            appState.ccLastResetDate = appState.ccLastResetDate || getTodayKey();
+
+            ccState = normalizeCcState({
+                recipients: Array.isArray(appState.ccRecipients) && appState.ccRecipients.length ? appState.ccRecipients : createDefaultCcRecipients(),
+                lastResetDate: appState.ccLastResetDate
+            });
+
+            renderUsersFromData(appState.users);
+            renderSheetsFromData(appState.sheets);
             renderCcList();
-            renderLogsFromData(loadLogsFromStorage());
+            renderLogsFromData(appState.logs);
 
             const selectedSheetName = String(appState.selectedSheet || '').trim();
             if (selectedSheetName) {
@@ -2161,16 +2243,6 @@
                 checkbox.checked = selectedWeeks.includes(week);
             });
             updateWeekBoxes(weekTypeValue === '5week' ? 5 : 4);
-        }
-
-        function loadLogsFromStorage() {
-            try {
-                const raw = localStorage.getItem(LOGS_STORAGE_KEY);
-                const parsed = raw ? JSON.parse(raw) : [];
-                return Array.isArray(parsed) ? parsed : [];
-            } catch (error) {
-                return [];
-            }
         }
 
         function updateCcSummary() {
@@ -2333,7 +2405,7 @@
         function renderUsersFromData(users = []) {
             tableBody.innerHTML = users.map((user, index) => createUserRowHtml({
                 ...user,
-                id: String(index + 1).padStart(3, '0')
+                id: user.id || String(index + 1).padStart(3, '0')
             }, index)).join('');
             document.querySelectorAll('#table-body tr').forEach(bindUserRow);
             updateHeaderCheckboxState();
@@ -2463,6 +2535,7 @@
             if (addSheetSubmitBtn) addSheetSubmitBtn.textContent = 'Add Sheet';
             addSheetFormModal.style.display = 'block';
             document.getElementById('sheetName').focus();
+            document.getElementById('sheetWeekType').value = document.querySelector('input[name="week-type"]:checked')?.value || '5week';
             sheetsModal.style.display = 'none';
             addLog('Add sheet form opened');
         }
@@ -2473,6 +2546,7 @@
             const sheetName = item.querySelector('.sheet-month')?.textContent?.trim() || '';
             const sheetId = item.querySelector('.sheet-id')?.textContent?.replace(/^ID:\s*/i, '')?.trim() || '';
             const sheetLink = item.querySelector('.sheet-month')?.getAttribute('href') || '';
+            const sheetWeekType = item.dataset.weekType || '5week';
 
             if (addSheetFormTitle) addSheetFormTitle.textContent = 'Edit Sheet';
             if (addSheetSubmitBtn) addSheetSubmitBtn.textContent = 'Save Changes';
@@ -2480,6 +2554,7 @@
             document.getElementById('sheetName').value = sheetName;
             document.getElementById('sheetId').value = sheetId;
             document.getElementById('sheetLink').value = sheetLink;
+            document.getElementById('sheetWeekType').value = sheetWeekType;
 
             addSheetFormModal.style.display = 'block';
             document.getElementById('sheetName').focus();
@@ -2634,31 +2709,9 @@
             }
         });
 
-        // Sheet item actions
-        document.querySelectorAll('.sheet-action').forEach((btn, index) => {
-            btn.addEventListener('click', function (e) {
-                e.preventDefault();
-                const item = this.closest('.sheet-item');
-                const month = item.querySelector('.sheet-month')?.textContent?.trim() || 'Sheet';
-                if (confirm(`Delete sheet "${month}"?`)) {
-                    item.style.animation = 'fadeOut 0.3s ease-out';
-                    setTimeout(() => item.remove(), 300);
-                    addLog(`Sheet "${month}" deleted`);
-                }
-            });
-        });
-
-        document.querySelectorAll('.sheet-edit-action').forEach((btn) => {
-            btn.addEventListener('click', function (e) {
-                e.preventDefault();
-                const item = this.closest('.sheet-item');
-                openEditSheetFormModal(item);
-            });
-        });
-
-
         function updateSelectedSheet(name) {
             const selectedSheetDisplay = document.getElementById('selectedSheetDisplay');
+            appState.selectedSheet = String(name || '');
             if (selectedSheetDisplay) {
                 selectedSheetDisplay.innerHTML = `<span>Selected:</span> ${name || 'No sheet selected'}`;
             }
@@ -2677,6 +2730,7 @@
             const name = item.querySelector('.sheet-month')?.textContent?.trim() || '';
             const link = item.querySelector('.sheet-month')?.getAttribute('href') || '';
             const id = item.querySelector('.sheet-id')?.textContent?.replace(/^ID:\s*/i, '')?.trim() || '';
+            const weekType = item.dataset.weekType || '5week';
 
             if (!name || name === 'No sheet selected') {
                 return { ok: false, reason: 'Sheet name is missing.', fix: 'Edit or reselect a sheet name before sending.' };
@@ -2698,6 +2752,7 @@
                 name,
                 link,
                 id,
+                weekType,
                 rows,
                 totalPoints,
                 reducePoint: 0,
@@ -2739,28 +2794,31 @@
             const sheetName = document.getElementById('sheetName').value.trim();
             const sheetId = document.getElementById('sheetId').value.trim();
             const sheetLink = document.getElementById('sheetLink').value.trim();
+            const sheetWeekType = document.getElementById('sheetWeekType').value;
 
-            if (!sheetName || !sheetId || !sheetLink) {
+            if (!sheetName || !sheetId || !sheetLink || !sheetWeekType) {
                 alert('Please fill all fields');
                 return;
             }
 
-                if (editingSheetItem) {
-                    const linkAnchor = editingSheetItem.querySelector('.sheet-month');
-                    const idCell = editingSheetItem.querySelector('.sheet-id');
-                    if (linkAnchor) {
-                        linkAnchor.textContent = sheetName;
-                        linkAnchor.href = sheetLink;
-                        linkAnchor.title = sheetLink;
-                    }
-                    if (idCell) idCell.textContent = `ID: ${sheetId}`;
-                    addLog(`Sheet "${sheetName}" updated`);
-                    alert(`Sheet "${sheetName}" updated successfully!`);
-                    schedulePersistAppState();
-                } else {
+            if (editingSheetItem) {
+                const linkAnchor = editingSheetItem.querySelector('.sheet-month');
+                const idCell = editingSheetItem.querySelector('.sheet-id');
+                if (linkAnchor) {
+                    linkAnchor.textContent = sheetName;
+                    linkAnchor.href = sheetLink;
+                    linkAnchor.title = sheetLink;
+                }
+                if (idCell) idCell.textContent = `ID: ${sheetId}`;
+                editingSheetItem.dataset.weekType = sheetWeekType;
+                addLog(`Sheet "${sheetName}" updated`);
+                alert(`Sheet "${sheetName}" updated successfully!`);
+                schedulePersistAppState();
+            } else {
                 const newSheet = document.createElement('div');
                 newSheet.className = 'sheet-item';
                 newSheet._reportRows = createDefaultReportRows();
+                newSheet.dataset.weekType = sheetWeekType;
                 newSheet.innerHTML = `
                     <input type="checkbox" class="sheet-checkbox">
                     <div class="sheet-body">
@@ -2779,9 +2837,11 @@
                     e.preventDefault();
                     if (confirm(`Delete sheet "${sheetName}"?`)) {
                         newSheet.style.animation = 'fadeOut 0.3s ease-out';
-                        setTimeout(() => newSheet.remove(), 300);
-                        addLog(`Sheet "${sheetName}" deleted`);
-                        schedulePersistAppState();
+                        setTimeout(() => {
+                            newSheet.remove();
+                            addLog(`Sheet "${sheetName}" deleted`);
+                            void persistAppState().catch((error) => console.error('Persist after sheet delete failed', error));
+                        }, 300);
                     }
                 });
 
@@ -2868,6 +2928,7 @@
                 this.closest('.week-type-badge').classList.add('active');
 
                 const weekCount = this.value === '5week' ? 5 : 4;
+                appState.weekType = this.value;
                 updateWeekBoxes(weekCount);
                 addLog(`Switched to ${this.value}`);
                 schedulePersistAppState();
@@ -2881,11 +2942,13 @@
             weekCheckboxes.forEach(container => {
                 const items = container.querySelectorAll('.week-check-item');
                 items.forEach((item, index) => {
+                    const input = item.querySelector('input');
                     if (index < count) {
                         item.style.display = 'flex';
+                        if (input) input.checked = true;
                     } else {
                         item.style.display = 'none';
-                        item.querySelector('input').checked = false;
+                        if (input) input.checked = false;
                     }
                 });
             });
@@ -2927,10 +2990,12 @@
                 const userEmail = row.querySelector('.email-col')?.textContent?.trim() || 'No email';
                 if (confirm(`Delete user "${userName}" (${userEmail})?`)) {
                     row.style.animation = 'fadeOut 0.3s ease-out';
-                    setTimeout(() => row.remove(), 300);
-                    addLog(`User deleted: ${userName} (${userEmail})`);
-                    updateHeaderCheckboxState();
-                    schedulePersistAppState();
+                    setTimeout(() => {
+                        row.remove();
+                        addLog(`User deleted: ${userName} (${userEmail})`);
+                        updateHeaderCheckboxState();
+                        void persistAppState().catch((error) => console.error('Persist after user delete failed', error));
+                    }, 300);
                 }
             }
         });
@@ -3001,12 +3066,15 @@
                     body: JSON.stringify({
                         recipients,
                         ccEmails: getSelectedCcEmails(),
+                        selectedWeeks: getSelectedWeeksForSend(),
+                        weekType: document.querySelector('input[name="week-type"]:checked')?.value || '5week',
                         subjectPrefix: 'Monthly Progress Report',
                         reportTitle: 'PERFORMANCE EMAIL SYSTEM',
                         period: sheetInfo.name || document.getElementById('selectedSheetDisplay')?.textContent?.replace('Selected:', '').trim() || 'Progress Report',
                         sheetName: sheetInfo.name || '',
                         sheetId: sheetInfo.id || '',
                         sheetLink: sheetInfo.link || '',
+                        sheetWeekType: sheetInfo.weekType || '5week',
                         totalLabel: 'Total Points',
                         totalPoints: sheetInfo.totalPoints || 0,
                         reducePoint: sheetInfo.reducePoint || 0,
@@ -3111,14 +3179,11 @@
                 entries[entries.length - 1].remove();
             }
 
-            const nextLogs = [
+            appState.logs = [
                 { time: timeString, message },
-                ...loadLogsFromStorage()
-            ].slice(0, 15);
-
-            try {
-                localStorage.setItem(LOGS_STORAGE_KEY, JSON.stringify(nextLogs));
-            } catch (error) {}
+                ...(Array.isArray(appState.logs) ? appState.logs : [])
+            ].slice(0, 50);
+            schedulePersistAppState();
         }
 
         // Select All / Deselect All

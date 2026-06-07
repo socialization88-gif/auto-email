@@ -1,0 +1,650 @@
+{
+  "selectedSheet": "June 2026",
+  "selectedWeeks": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "weekType": "5week",
+  "ccLastResetDate": "2026-06-07",
+  "users": [
+    {
+      "id": "001",
+      "name": "Zannatul Adan",
+      "email": "adanzannat@gmail.com",
+      "statusType": "status-pending",
+      "statusText": "⏱ Pending",
+      "time": "Not sent"
+    },
+    {
+      "id": "003",
+      "name": "Ukyaa Marma",
+      "email": "ukyaamarma.cu@gmail.com",
+      "statusType": "status-pending",
+      "statusText": "⏱ Pending",
+      "time": "Not sent"
+    },
+    {
+      "id": "004",
+      "name": "Abid Rohman Zenith",
+      "email": "abidrohmanzenith@gmail.com",
+      "statusType": "status-pending",
+      "statusText": "⏱ Pending",
+      "time": "Not sent"
+    },
+    {
+      "id": "005",
+      "name": "Keosajai Marma",
+      "email": "keosazaimarma@gmail.com",
+      "statusType": "status-pending",
+      "statusText": "⏱ Pending",
+      "time": "Not sent"
+    },
+    {
+      "id": "006",
+      "name": "Md. Rafikul Islam\nHriday",
+      "email": "hriday1833@gmail.com",
+      "statusType": "status-pending",
+      "statusText": "⏱ Pending",
+      "time": "Not sent"
+    },
+    {
+      "id": "007",
+      "name": "Otingmang Chak",
+      "email": "utingmong99@gmail.com",
+      "statusType": "status-pending",
+      "statusText": "⏱ Pending",
+      "time": "Not sent"
+    },
+    {
+      "id": "008",
+      "name": "Joshaimong Marma",
+      "email": "joshaimongmarma149@gmail.com",
+      "statusType": "status-pending",
+      "statusText": "⏱ Pending",
+      "time": "Not sent"
+    },
+    {
+      "id": "009",
+      "name": "Bendikar Bawm",
+      "email": "bawmbendi@gmail.com",
+      "statusType": "status-pending",
+      "statusText": "⏱ Pending",
+      "time": "Not sent"
+    },
+    {
+      "id": "010",
+      "name": "Yayoung Murong",
+      "email": "yayoungmro@gmail.com",
+      "statusType": "status-pending",
+      "statusText": "⏱ Pending",
+      "time": "Not sent"
+    },
+    {
+      "id": "011",
+      "name": "M. Najmol Islam",
+      "email": "najmolislam1557@gmail.com",
+      "statusType": "status-sent",
+      "statusText": "✓ Sent",
+      "time": "2026-06-07 03:24 PM"
+    },
+    {
+      "id": "012",
+      "name": "Khiamong Chak",
+      "email": "kmdhrubo24@gmail.com",
+      "statusType": "status-pending",
+      "statusText": "⏱ Pending",
+      "time": "Not sent"
+    },
+    {
+      "id": "013",
+      "name": "Hlathoaicha Chak",
+      "email": "hlathoaichachak878@gmail.com",
+      "statusType": "status-pending",
+      "statusText": "⏱ Pending",
+      "time": "Not sent"
+    },
+    {
+      "id": "014",
+      "name": "Prachurja Chakma",
+      "email": "prachurjachakmap@gmail.com",
+      "statusType": "status-pending",
+      "statusText": "⏱ Pending",
+      "time": "Not sent"
+    },
+    {
+      "id": "015",
+      "name": "Kyachaimong Chak",
+      "email": "kyachaimongchak4@gmail.com",
+      "statusType": "status-pending",
+      "statusText": "⏱ Pending",
+      "time": "Not sent"
+    },
+    {
+      "id": "016",
+      "name": "Baidaram Tripura",
+      "email": "ramtripura175@gmail.com",
+      "statusType": "status-pending",
+      "statusText": "⏱ Pending",
+      "time": "Not sent"
+    },
+    {
+      "id": "017",
+      "name": "Orbish Chakma",
+      "email": "orbishchakma835@gmail.com",
+      "statusType": "status-pending",
+      "statusText": "⏱ Pending",
+      "time": "Not sent"
+    },
+    {
+      "id": "018",
+      "name": "Rakib Hasan",
+      "email": "rakibhasanraka188@gmail.com",
+      "statusType": "status-pending",
+      "statusText": "⏱ Pending",
+      "time": "Not sent"
+    },
+    {
+      "id": "019",
+      "name": "Subrata Chakma",
+      "email": "subratatuzim178@gmail.com",
+      "statusType": "status-pending",
+      "statusText": "⏱ Pending",
+      "time": "Not sent"
+    },
+    {
+      "id": "020",
+      "name": "Forhadul Islam",
+      "email": "forhadulpc@gmail.com",
+      "statusType": "status-pending",
+      "statusText": "⏱ Pending",
+      "time": "Not sent"
+    },
+    {
+      "id": "021",
+      "name": "Shuvo Baidya",
+      "email": "m.shuvobaidya710@gmail.com",
+      "statusType": "status-pending",
+      "statusText": "⏱ Pending",
+      "time": "Not sent"
+    },
+    {
+      "id": "022",
+      "name": "Rangchang Mro",
+      "email": "chongmro248@gmail.com",
+      "statusType": "status-pending",
+      "statusText": "⏱ Pending",
+      "time": "Not sent"
+    },
+    {
+      "id": "023",
+      "name": "Reasad Ali",
+      "email": "mdreasadali1107@gmail.com",
+      "statusType": "status-pending",
+      "statusText": "⏱ Pending",
+      "time": "Not sent"
+    },
+    {
+      "id": "024",
+      "name": "Kaingwy Mro",
+      "email": "kaingwym@gmail.com",
+      "statusType": "status-pending",
+      "statusText": "⏱ Pending",
+      "time": "Not sent"
+    },
+    {
+      "id": "025",
+      "name": "Kaingpre Mro",
+      "email": "praymrokaing@gmail.com",
+      "statusType": "status-pending",
+      "statusText": "⏱ Pending",
+      "time": "Not sent"
+    },
+    {
+      "id": "026",
+      "name": "Md. Haidar Ali",
+      "email": "haidarali45466@gmail.com",
+      "statusType": "status-pending",
+      "statusText": "⏱ Pending",
+      "time": "Not sent"
+    },
+    {
+      "id": "027",
+      "name": "Arif Shahriar",
+      "email": "mdarifshahriarbappy@gmail.com",
+      "statusType": "status-pending",
+      "statusText": "⏱ Pending",
+      "time": "Not sent"
+    },
+    {
+      "id": "028",
+      "name": "Jebedai Bawm",
+      "email": "bawmjebedai@gmail.com",
+      "statusType": "status-pending",
+      "statusText": "⏱ Pending",
+      "time": "Not sent"
+    },
+    {
+      "id": "029",
+      "name": "Rumonjoy Tanchangya",
+      "email": "rumonjoy2025@gmail.com",
+      "statusType": "status-pending",
+      "statusText": "⏱ Pending",
+      "time": "Not sent"
+    },
+    {
+      "id": "030",
+      "name": "Soshamoy\nTongchongya",
+      "email": "jovantcg04@gmail.com",
+      "statusType": "status-pending",
+      "statusText": "⏱ Pending",
+      "time": "Not sent"
+    },
+    {
+      "id": "031",
+      "name": "M. Mojahid Sheikh",
+      "email": "sk.mujahid8875@gmail.com",
+      "statusType": "status-pending",
+      "statusText": "⏱ Pending",
+      "time": "Not sent"
+    },
+    {
+      "id": "032",
+      "name": "Koshai Mro",
+      "email": "287kusai@gmail.com",
+      "statusType": "status-sent",
+      "statusText": "✓ Sent",
+      "time": "2026-06-07 03:11 PM"
+    },
+    {
+      "id": "033",
+      "name": "Uthoaingyo Chak",
+      "email": "uthoaingyochak16@gmail.com",
+      "statusType": "status-sent",
+      "statusText": "✓ Sent",
+      "time": "2026-06-07 03:25 PM"
+    },
+    {
+      "id": "034",
+      "name": "Mangrum Mro",
+      "email": "mangrummro6@gmail.com",
+      "statusType": "status-pending",
+      "statusText": "⏱ Pending",
+      "time": "Not sent"
+    },
+    {
+      "id": "035",
+      "name": "Denwy Murong",
+      "email": "denwymro@gmail.com",
+      "statusType": "status-pending",
+      "statusText": "⏱ Pending",
+      "time": "Not sent"
+    },
+    {
+      "id": "036",
+      "name": "Thonging Khumi",
+      "email": "thongingkhumi@gmail.com",
+      "statusType": "status-pending",
+      "statusText": "⏱ Pending",
+      "time": "Not sent"
+    },
+    {
+      "id": "037",
+      "name": "Manok Mro",
+      "email": "mankoh4142@gmail.com",
+      "statusType": "status-pending",
+      "statusText": "⏱ Pending",
+      "time": "Not sent"
+    },
+    {
+      "id": "038",
+      "name": "Md. Abul Hossain\nSurjo",
+      "email": "mdabulhossainsurjo23@gmail.com",
+      "statusType": "status-pending",
+      "statusText": "⏱ Pending",
+      "time": "Not sent"
+    },
+    {
+      "id": "039",
+      "name": "Prue Mong U Marma",
+      "email": "promong302@gmail.com",
+      "statusType": "status-pending",
+      "statusText": "⏱ Pending",
+      "time": "Not sent"
+    },
+    {
+      "id": "040",
+      "name": "Hlathuiching Marma",
+      "email": "",
+      "statusType": "status-pending",
+      "statusText": "⏱ Pending",
+      "time": "Not sent"
+    },
+    {
+      "id": "041",
+      "name": "Tonu Ray Tripura",
+      "email": "tonuraytripura14@gmail.com",
+      "statusType": "status-pending",
+      "statusText": "⏱ Pending",
+      "time": "Not sent"
+    },
+    {
+      "id": "042",
+      "name": "Waingjow Marma",
+      "email": "wainggyomarma@gmail.com",
+      "statusType": "status-pending",
+      "statusText": "⏱ Pending",
+      "time": "Not sent"
+    },
+    {
+      "id": "043",
+      "name": "Julinmoy Tripura",
+      "email": "julinmoy@gmail.com",
+      "statusType": "status-pending",
+      "statusText": "⏱ Pending",
+      "time": "Not sent"
+    },
+    {
+      "id": "044",
+      "name": "Lalneihsang Bawm",
+      "email": "",
+      "statusType": "status-pending",
+      "statusText": "⏱ Pending",
+      "time": "Not sent"
+    },
+    {
+      "id": "045",
+      "name": "Rubaiya Sultana",
+      "email": "socialization88@gmail.com",
+      "statusType": "status-pending",
+      "statusText": "⏱ Pending",
+      "time": "Not sent"
+    }
+  ],
+  "sheets": [
+    {
+      "name": "May 2026",
+      "id": "1mZ6jDZW9OaGtwJspgd9Ovjo0Xzo4HJJjJRgNoOi8Qq0",
+      "link": "https://docs.google.com/spreadsheets/d/1mZ6jDZW9OaGtwJspgd9Ovjo0Xzo4HJJjJRgNoOi8Qq0/edit?usp=sharing",
+      "checked": false,
+      "weekType": "4week"
+    },
+    {
+      "name": "June 2026",
+      "id": "1ArDlVOXYdQOE7LqsnhXld9bE6j8BOduUd2IjkpO53CA",
+      "link": "https://docs.google.com/spreadsheets/d/1ArDlVOXYdQOE7LqsnhXld9bE6j8BOduUd2IjkpO53CA/edit?usp=sharing",
+      "checked": true,
+      "weekType": "5week"
+    },
+    {
+      "name": "July 2026",
+      "id": "--",
+      "link": "#",
+      "checked": false,
+      "weekType": "5week"
+    },
+    {
+      "name": "August 2026",
+      "id": "--",
+      "link": "#",
+      "checked": false,
+      "weekType": "5week"
+    },
+    {
+      "name": "September 2026",
+      "id": "--",
+      "link": "#",
+      "checked": false,
+      "weekType": "5week"
+    },
+    {
+      "name": "October 2026",
+      "id": "--",
+      "link": "#",
+      "checked": false,
+      "weekType": "5week"
+    },
+    {
+      "name": "November 2026",
+      "id": "--",
+      "link": "#",
+      "checked": false,
+      "weekType": "5week"
+    },
+    {
+      "name": "December 2026",
+      "id": "--",
+      "link": "#",
+      "checked": false,
+      "weekType": "5week"
+    }
+  ],
+  "ccRecipients": [
+    {
+      "id": "01",
+      "name": "Zannatul Adan",
+      "email": "adanzannat@gmail.com",
+      "checked": false,
+      "dailyCount": 0
+    },
+    {
+      "id": "02",
+      "name": "Chotan Chowdhury",
+      "email": "chowdhury.chotan24@gmail.com",
+      "checked": false,
+      "dailyCount": 0
+    },
+    {
+      "id": "03",
+      "name": "Ukyaa Marma",
+      "email": "ukyaamarma.cu@gmail.com",
+      "checked": false,
+      "dailyCount": 0
+    }
+  ],
+  "logs": [
+    {
+      "time": "06/07/2026, 03:25:32 PM",
+      "message": "Sent 2 emails successfully"
+    },
+    {
+      "time": "06/07/2026, 03:24:55 PM",
+      "message": "SHEETS modal opened"
+    },
+    {
+      "time": "06/07/2026, 03:24:34 PM",
+      "message": "Uthoaingyo Chak selected"
+    },
+    {
+      "time": "06/07/2026, 03:24:29 PM",
+      "message": "M. Najmol Islam selected"
+    },
+    {
+      "time": "06/07/2026, 03:24:20 PM",
+      "message": "System started"
+    },
+    {
+      "time": "06/07/2026, 03:24:20 PM",
+      "message": "Week boxes updated to 5"
+    },
+    {
+      "time": "06/07/2026, 03:14:41 PM",
+      "message": "All rows deselected"
+    },
+    {
+      "time": "06/07/2026, 03:14:40 PM",
+      "message": "All rows selected"
+    },
+    {
+      "time": "06/07/2026, 03:13:47 PM",
+      "message": "Email send failed: Unable to fetch sheet data.. Fix: If this sheet is private, provide valid Google Sheets service account credentials or share the sheet with the service account, then restart the server."
+    },
+    {
+      "time": "06/07/2026, 03:13:38 PM",
+      "message": "Switched to 5week"
+    },
+    {
+      "time": "06/07/2026, 03:13:38 PM",
+      "message": "Week boxes updated to 5"
+    },
+    {
+      "time": "06/07/2026, 03:13:36 PM",
+      "message": "Email send failed: Unable to fetch sheet data.. Fix: If this sheet is private, provide valid Google Sheets service account credentials or share the sheet with the service account, then restart the server."
+    },
+    {
+      "time": "06/07/2026, 03:13:26 PM",
+      "message": "SHEETS modal opened"
+    },
+    {
+      "time": "06/07/2026, 03:13:24 PM",
+      "message": "Sheet \"June 2026\" updated"
+    },
+    {
+      "time": "06/07/2026, 03:12:54 PM",
+      "message": "Edit sheet form opened: June 2026"
+    },
+    {
+      "time": "06/07/2026, 03:12:52 PM",
+      "message": "SHEETS modal opened"
+    },
+    {
+      "time": "06/07/2026, 03:12:50 PM",
+      "message": "CC list closed"
+    },
+    {
+      "time": "06/07/2026, 03:12:48 PM",
+      "message": "CC list opened"
+    },
+    {
+      "time": "06/07/2026, 03:12:37 PM",
+      "message": "Email send failed: Unable to fetch sheet data.. Fix: If this sheet is private, provide valid Google Sheets service account credentials or share the sheet with the service account, then restart the server."
+    },
+    {
+      "time": "06/07/2026, 03:12:06 PM",
+      "message": "Sheet \"June 2026\" selected"
+    },
+    {
+      "time": "06/07/2026, 03:12:04 PM",
+      "message": "SHEETS modal opened"
+    },
+    {
+      "time": "06/07/2026, 03:11:28 PM",
+      "message": "Sent 2 emails successfully"
+    },
+    {
+      "time": "06/07/2026, 03:11:11 PM",
+      "message": "Koshai Mro selected"
+    },
+    {
+      "time": "06/07/2026, 03:11:10 PM",
+      "message": "Uthoaingyo Chak selected"
+    },
+    {
+      "time": "06/07/2026, 03:11:05 PM",
+      "message": "System started"
+    },
+    {
+      "time": "06/07/2026, 03:11:05 PM",
+      "message": "Week boxes updated to 4"
+    },
+    {
+      "time": "06/07/2026, 03:04:50 PM",
+      "message": "Mangrum Mro selected"
+    },
+    {
+      "time": "06/07/2026, 03:04:41 PM",
+      "message": "Koshai Mro selected"
+    },
+    {
+      "time": "06/07/2026, 03:04:07 PM",
+      "message": "SHEETS modal opened"
+    },
+    {
+      "time": "06/07/2026, 03:04:06 PM",
+      "message": "CC list closed"
+    },
+    {
+      "time": "06/07/2026, 03:04:05 PM",
+      "message": "CC list opened"
+    },
+    {
+      "time": "06/07/2026, 03:00:34 PM",
+      "message": "Sent 1 emails successfully"
+    },
+    {
+      "time": "06/07/2026, 03:00:18 PM",
+      "message": "SHEETS modal opened"
+    },
+    {
+      "time": "06/07/2026, 03:00:16 PM",
+      "message": "Sheet \"May 2026\" updated"
+    },
+    {
+      "time": "06/07/2026, 03:00:10 PM",
+      "message": "Edit sheet form opened: May 2026"
+    },
+    {
+      "time": "06/07/2026, 03:00:04 PM",
+      "message": "SHEETS modal opened"
+    },
+    {
+      "time": "06/07/2026, 03:00:02 PM",
+      "message": "Switched to 4week"
+    },
+    {
+      "time": "06/07/2026, 03:00:02 PM",
+      "message": "Week boxes updated to 4"
+    },
+    {
+      "time": "06/07/2026, 02:59:58 PM",
+      "message": "Sheet \"May 2026\" selected"
+    },
+    {
+      "time": "06/07/2026, 02:59:55 PM",
+      "message": "SHEETS modal opened"
+    },
+    {
+      "time": "06/07/2026, 02:59:54 PM",
+      "message": "CC list closed"
+    },
+    {
+      "time": "06/07/2026, 02:59:52 PM",
+      "message": "CC list opened"
+    },
+    {
+      "time": "06/07/2026, 02:59:51 PM",
+      "message": "CC list closed"
+    },
+    {
+      "time": "06/07/2026, 02:59:51 PM",
+      "message": "CC list opened"
+    },
+    {
+      "time": "06/07/2026, 02:58:55 PM",
+      "message": "Email send failed: Unable to fetch sheet data.. Fix: If this sheet is private, provide valid Google Sheets service account credentials or share the sheet with the service account, then restart the server."
+    },
+    {
+      "time": "06/07/2026, 02:58:29 PM",
+      "message": "Uthoaingyo Chak selected"
+    },
+    {
+      "time": "06/07/2026, 02:57:51 PM",
+      "message": "SHEETS modal opened"
+    },
+    {
+      "time": "06/07/2026, 02:57:37 PM",
+      "message": "System started"
+    },
+    {
+      "time": "06/07/2026, 02:57:37 PM",
+      "message": "Week boxes updated to 5"
+    },
+    {
+      "time": "06/07/2026, 02:57:27 PM",
+      "message": "System started"
+    }
+  ],
+  "lastUpdated": "2026-06-07 03:26 PM"
+}
